@@ -1,16 +1,22 @@
 import { createServer } from 'node:http';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { createReadStream, existsSync } from 'node:fs';
-import { extname, join, normalize } from 'node:path';
+import { extname, join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = normalize(join(__filename, '..'));
+const __dirname = dirname(__filename);
 const publicDir = __dirname;
 const dataDir = join(__dirname, 'data');
 const progressFile = join(dataDir, 'progress.json');
 const inboxFile = join(dataDir, 'contact-submissions.json');
 const PORT = Number(process.env.PORT || 3000);
+const MAX_BODY_BYTES = 200000;
+const MAX_PROGRESS_LIST_LENGTH = 200;
+const EMAIL_ERROR_MESSAGE_LIMIT = 200;
+const MAX_SESSION_XP = 4200;
+const PUBLIC_DIR_RESOLVED = resolve(publicDir);
+let writeQueue = Promise.resolve();
 
 const mimeTypes = {
   '.html': 'text/html; charset=utf-8',
@@ -49,6 +55,11 @@ async function writeJson(filePath, value) {
   await writeFile(filePath, JSON.stringify(value, null, 2), 'utf8');
 }
 
+function enqueueWrite(task) {
+  writeQueue = writeQueue.then(task, task);
+  return writeQueue;
+}
+
 function sendJson(res, code, payload) {
   res.writeHead(code, {
     'Content-Type': 'application/json; charset=utf-8',
@@ -61,8 +72,12 @@ function parseBody(req) {
   return new Promise((resolve, reject) => {
     let body = '';
     req.on('data', (chunk) => {
+      if (body.length + chunk.length > MAX_BODY_BYTES) {
+        req.destroy();
+        reject(new Error('payload_too_large'));
+        return;
+      }
       body += chunk;
-      if (body.length > 200000) reject(new Error('payload_too_large'));
     });
     req.on('end', () => {
       if (!body) return resolve({});
@@ -108,15 +123,15 @@ async function sendContactEmail(payload) {
 
   if (!response.ok) {
     const details = await response.text();
-    throw new Error(`email_send_failed:${details.slice(0, 200)}`);
+    throw new Error(`email_send_failed:${details.slice(0, EMAIL_ERROR_MESSAGE_LIMIT)}`);
   }
 
   return { delivered: true };
 }
 
 function sanitizeProgress(body) {
-  const list = (arr) => Array.isArray(arr) ? arr.slice(0, 200).map(String) : [];
-  const xp = Number.isFinite(Number(body.xp)) ? Math.max(0, Math.min(Number(body.xp), 4200)) : 0;
+  const list = (arr) => Array.isArray(arr) ? arr.slice(0, MAX_PROGRESS_LIST_LENGTH).map(String) : [];
+  const xp = Number.isFinite(Number(body.xp)) ? Math.max(0, Math.min(Number(body.xp), MAX_SESSION_XP)) : 0;
   const level = Number.isFinite(Number(body.level)) ? Math.max(1, Math.min(Number(body.level), 10)) : 1;
   const skillClicks = Number.isFinite(Number(body.skillClicks)) ? Math.max(0, Math.min(Number(body.skillClicks), 500)) : 0;
   return {
@@ -146,12 +161,12 @@ function sanitizeMessage(body) {
 
 function serveStatic(req, res) {
   const path = req.url === '/' ? '/index.html' : req.url;
-  const cleanPath = normalize(decodeURIComponent(path).replace(/^\/+/, ''));
-  if (cleanPath.startsWith('..')) {
+  const decodedPath = decodeURIComponent(path).replace(/^\/+/, '');
+  const filePath = resolve(publicDir, decodedPath);
+  if (!filePath.startsWith(`${PUBLIC_DIR_RESOLVED}/`) && filePath !== PUBLIC_DIR_RESOLVED) {
     sendJson(res, 403, { error: 'forbidden' });
     return;
   }
-  const filePath = join(publicDir, cleanPath);
   const extension = extname(filePath).toLowerCase();
 
   if (!existsSync(filePath)) {
@@ -184,9 +199,11 @@ const server = createServer(async (req, res) => {
       const progress = sanitizeProgress(body);
       if (!progress.sessionId) return sendJson(res, 400, { error: 'sessionId_required' });
 
-      const db = await readJson(progressFile, { sessions: {} });
-      db.sessions[progress.sessionId] = progress;
-      await writeJson(progressFile, db);
+      await enqueueWrite(async () => {
+        const db = await readJson(progressFile, { sessions: {} });
+        db.sessions[progress.sessionId] = progress;
+        await writeJson(progressFile, db);
+      });
       return sendJson(res, 200, { ok: true, progress });
     }
 
@@ -197,9 +214,11 @@ const server = createServer(async (req, res) => {
         return sendJson(res, 400, { error: 'missing_required_fields' });
       }
 
-      const inbox = await readJson(inboxFile, { submissions: [] });
-      inbox.submissions.push({ ...payload, createdAt: new Date().toISOString() });
-      await writeJson(inboxFile, inbox);
+      await enqueueWrite(async () => {
+        const inbox = await readJson(inboxFile, { submissions: [] });
+        inbox.submissions.push({ ...payload, createdAt: new Date().toISOString() });
+        await writeJson(inboxFile, inbox);
+      });
 
       let emailState = { delivered: false, reason: 'email_not_configured' };
       try {

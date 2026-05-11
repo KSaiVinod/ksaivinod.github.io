@@ -1484,7 +1484,7 @@
       background: rgba(255, 215, 0, 0.1);
       color: var(--accent4);
       font-size: 14px;
-      cursor: none;
+      cursor: pointer;
       animation: rune-bob 2.5s ease-in-out infinite;
       transition: transform 0.2s, opacity 0.2s;
     }
@@ -1636,7 +1636,7 @@
       font-family: 'Press Start 2P';
       font-size: 8px;
       padding: 12px;
-      cursor: none;
+      cursor: pointer;
       letter-spacing: 1px;
     }
 
@@ -2293,6 +2293,7 @@
 
     const XP_PER_LEVEL = 420;
     const MAX_LEVEL = 10;
+    const SECTION_VISIBILITY_THRESHOLD = 0.55;
     const STORAGE_KEY = 'sv-player-progress-v3';
     const SESSION_KEY = 'sv-player-session-id';
     const API_BASE = window.location.origin;
@@ -2312,7 +2313,7 @@
 
     function makeSessionId() {
       if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
-      return 'sess_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+      return `sess_${Date.now().toString(36)}_${Math.floor(performance.now()).toString(36)}`;
     }
 
     function getSessionId() {
@@ -2468,7 +2469,7 @@
             addXP(SECTION_XP[id] || 40, 'NEW ZONE DISCOVERED');
           }
         });
-      }, { threshold: 0.55 });
+      }, { threshold: SECTION_VISIBILITY_THRESHOLD });
       sections.forEach((sec) => obs.observe(sec));
     }
 
@@ -2489,7 +2490,7 @@
       });
       progressEl.textContent = `${progress.foundRunes.length} / ${runes.length} RUNES`;
       progress.foundRunes.forEach((id) => {
-        const rune = document.querySelector(`.hidden-rune[data-rune="${id}"]`);
+        const rune = Array.from(runes).find((item) => item.dataset.rune === id);
         if (rune) rune.classList.add('found');
       });
     }
@@ -2560,7 +2561,7 @@
         tagsEl.appendChild(span);
       });
       document.getElementById('modal').classList.add('open');
-      const chest = document.querySelector(`.chest[onclick="openChest('${id}')"]`);
+      const chest = Array.from(document.querySelectorAll('.chest')).find((item) => item.getAttribute('onclick') === `openChest('${id}')`);
       if (chest) {
         chest.classList.add('loot-drop');
         setTimeout(() => chest.classList.remove('loot-drop'), 450);
