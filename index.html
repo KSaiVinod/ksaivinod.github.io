@@ -1,1152 +1,2229 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sai Vinod · Portfolio</title>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#0a0a12;
-  --bg2:#0f0f1a;
-  --panel:#13131f;
-  --panel2:#1a1a2e;
-  --border:#2a2a4a;
-  --border2:#3a3a6a;
-  --accent:#00f5c4;
-  --accent2:#ff6b35;
-  --accent3:#a855f7;
-  --accent4:#ffd700;
-  --text:#e0e0ff;
-  --text2:#8080b0;
-  --red:#ff4444;
-  --green:#44ff88;
-  --blue:#4488ff;
-  --hp-green:#2ecc71;
-  --scanline:rgba(0,245,196,0.03);
-}
-html{scroll-behavior:smooth}
-body{
-  background:var(--bg);
-  color:var(--text);
-  font-family:'Rajdhani',sans-serif;
-  font-size:16px;
-  overflow-x:hidden;
-  cursor:none;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sai Vinod · Portfolio</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Rajdhani:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --bg: #0a0a12;
+      --bg2: #0f0f1a;
+      --panel: #13131f;
+      --panel2: #1a1a2e;
+      --border: #2a2a4a;
+      --border2: #3a3a6a;
+      --accent: #00f5c4;
+      --accent2: #ff6b35;
+      --accent3: #a855f7;
+      --accent4: #ffd700;
+      --text: #e0e0ff;
+      --text2: #8080b0;
+      --red: #ff4444;
+      --green: #44ff88;
+      --blue: #4488ff;
+      --hp-green: #2ecc71;
+      --scanline: rgba(0, 245, 196, 0.03);
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 16px;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* Custom cursor */
+    #cursor {
+      position: fixed;
+      width: 20px;
+      height: 20px;
+      pointer-events: none;
+      z-index: 9999;
+      transition: transform 0.1s;
+    }
+
+    #cursor::before {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-bottom: 14px solid var(--accent);
+      top: 0;
+      left: 0;
+      image-rendering: pixelated;
+    }
+
+    #cursor::after {
+      content: '';
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: var(--accent);
+      bottom: 0;
+      left: 8px;
+      box-shadow: 0 0 8px var(--accent);
+    }
+
+    body:hover #cursor {
+      transform: scale(1.2)
+    }
+
+    /* Scanline overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, var(--scanline) 2px, var(--scanline) 4px);
+      pointer-events: none;
+      z-index: 9000;
+    }
+
+    /* Stars background */
+    #stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none
+    }
+
+    /* Floating particles */
+    .particle {
+      position: fixed;
+      pointer-events: none;
+      z-index: 1;
+      width: 3px;
+      height: 3px;
+      background: var(--accent);
+      animation: float-up 4s linear infinite;
+      opacity: 0;
+    }
+
+    @keyframes float-up {
+      0% {
+        opacity: 0;
+        transform: translateY(0) scale(1)
+      }
+
+      20% {
+        opacity: 1
+      }
+
+      80% {
+        opacity: 0.5
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateY(-300px) scale(0)
+      }
+    }
+
+    /* HUD - Top bar */
+    #hud {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: linear-gradient(180deg, rgba(10, 10, 18, 0.98) 0%, rgba(10, 10, 18, 0.8) 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(10px);
+    }
+
+    .hud-player {
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .player-sprite {
+      width: 32px;
+      height: 32px;
+      image-rendering: pixelated;
+      position: relative;
+      animation: player-idle 0.8s steps(2) infinite;
+    }
+
+    @keyframes player-idle {
+      0% {
+        filter: brightness(1)
+      }
+
+      50% {
+        filter: brightness(1.3)
+      }
+    }
+
+    .player-sprite-inner {
+      width: 32px;
+      height: 32px;
+      background: var(--accent3);
+      clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Press Start 2P';
+      font-size: 10px;
+      color: #fff;
+      box-shadow: 0 0 12px var(--accent3);
+    }
+
+    .player-name {
+      font-family: 'Press Start 2P';
+      font-size: 8px;
+      color: var(--accent);
+      letter-spacing: 1px
+    }
+
+    .player-class {
+      font-size: 11px;
+      color: var(--text2);
+      font-family: 'VT323';
+      letter-spacing: 2px
+    }
+
+    .hud-stats {
+      display: flex;
+      align-items: center;
+      gap: 20px
+    }
+
+    .stat-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .stat-label {
+      font-family: 'Press Start 2P';
+      font-size: 6px;
+      color: var(--text2)
+    }
+
+    .stat-bar {
+      width: 80px;
+      height: 8px;
+      background: #1a1a2e;
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden
+    }
+
+    .stat-bar-fill {
+      height: 100%;
+      position: relative;
+      transition: width 0.5s
+    }
+
+    .stat-bar-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 4px;
+      background: rgba(255, 255, 255, 0.4)
+    }
+
+    .hp-fill {
+      background: linear-gradient(90deg, #1a7a3a, var(--green));
+      width: 78%
+    }
+
+    .xp-fill {
+      background: linear-gradient(90deg, #1a1aaa, var(--blue));
+      width: 65%
+    }
+
+    .stat-val {
+      font-family: 'VT323';
+      font-size: 14px;
+      color: var(--text2)
+    }
+
+    .hud-nav {
+      display: flex;
+      gap: 4px
+    }
+
+    .nav-btn {
+      font-family: 'Press Start 2P';
+      font-size: 7px;
+      color: var(--text2);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 6px 10px;
+      cursor: none;
+      transition: all 0.15s;
+      letter-spacing: 1px;
+      text-decoration: none;
+      display: block;
+    }
+
+    .nav-btn:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: rgba(0, 245, 196, 0.08);
+      box-shadow: 0 0 12px rgba(0, 245, 196, 0.2)
+    }
+
+    /* HERO / WORLD MAP */
+    #world {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 100px 24px 60px;
+      z-index: 10;
+      overflow: hidden;
+    }
+
+    .world-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0, 245, 196, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 245, 196, 0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: grid-move 20s linear infinite;
+    }
+
+    @keyframes grid-move {
+      from {
+        background-position: 0 0
+      }
+
+      to {
+        background-position: 40px 40px
+      }
+    }
+
+    .world-title-wrap {
+      text-align: center;
+      position: relative;
+      z-index: 2
+    }
+
+    .world-tag {
+      font-family: 'Press Start 2P';
+      font-size: 8px;
+      color: var(--accent2);
+      letter-spacing: 3px;
+      margin-bottom: 16px;
+      animation: blink 1.5s steps(1) infinite;
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0
+      }
+    }
+
+    .world-name {
+      font-family: 'Press Start 2P';
+      font-size: clamp(18px, 4vw, 36px);
+      color: #fff;
+      line-height: 1.6;
+      text-shadow: 0 0 30px rgba(0, 245, 196, 0.5), 0 0 60px rgba(0, 245, 196, 0.2);
+      letter-spacing: 2px;
+    }
+
+    .world-name span {
+      color: var(--accent)
+    }
+
+    .world-subtitle {
+      font-family: 'VT323';
+      font-size: 24px;
+      color: var(--text2);
+      margin-top: 12px;
+      letter-spacing: 4px;
+    }
+
+    .world-desc {
+      max-width: 500px;
+      margin: 24px auto;
+      font-size: 15px;
+      color: var(--text2);
+      line-height: 1.7;
+      font-family: 'Rajdhani';
+      font-weight: 300;
+    }
+
+    /* Terrain zones */
+    .zones {
+      display: flex;
+      gap: 12px;
+      margin-top: 32px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .zone-btn {
+      font-family: 'Press Start 2P';
+      font-size: 7px;
+      padding: 12px 16px;
+      border: 1px solid;
+      cursor: none;
+      transition: all 0.2s;
+      letter-spacing: 1px;
+      position: relative;
+      overflow: hidden;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .zone-btn::before {
+      content: '▶ ';
+      font-size: 7px;
+    }
+
+    .zone-btn.z1 {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: rgba(0, 245, 196, 0.06)
+    }
+
+    .zone-btn.z1:hover {
+      background: rgba(0, 245, 196, 0.15);
+      box-shadow: 0 0 20px rgba(0, 245, 196, 0.3)
+    }
+
+    .zone-btn.z2 {
+      color: var(--accent2);
+      border-color: var(--accent2);
+      background: rgba(255, 107, 53, 0.06)
+    }
+
+    .zone-btn.z2:hover {
+      background: rgba(255, 107, 53, 0.15);
+      box-shadow: 0 0 20px rgba(255, 107, 53, 0.3)
+    }
+
+    .zone-btn.z3 {
+      color: var(--accent3);
+      border-color: var(--accent3);
+      background: rgba(168, 85, 247, 0.06)
+    }
+
+    .zone-btn.z3:hover {
+      background: rgba(168, 85, 247, 0.15);
+      box-shadow: 0 0 20px rgba(168, 85, 247, 0.3)
+    }
+
+    .zone-btn.z4 {
+      color: var(--accent4);
+      border-color: var(--accent4);
+      background: rgba(255, 215, 0, 0.06)
+    }
+
+    .zone-btn.z4:hover {
+      background: rgba(255, 215, 0, 0.15);
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.3)
+    }
+
+    /* floating runes */
+    .rune {
+      position: absolute;
+      font-family: 'Press Start 2P';
+      font-size: 10px;
+      color: rgba(0, 245, 196, 0.2);
+      pointer-events: none;
+      animation: rune-float 6s ease-in-out infinite;
+    }
+
+    @keyframes rune-float {
+
+      0%,
+      100% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0.2
+      }
+
+      50% {
+        transform: translateY(-20px) rotate(5deg);
+        opacity: 0.5
+      }
+    }
+
+    /* ===== SECTIONS ===== */
+    .section {
+      position: relative;
+      z-index: 10;
+      padding: 80px 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    .section-icon {
+      font-family: 'Press Start 2P';
+      font-size: 20px;
+      width: 48px;
+      height: 48px;
+      border: 2px solid currentColor;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .section-title-wrap {}
+
+    .section-pretitle {
+      font-family: 'Press Start 2P';
+      font-size: 7px;
+      letter-spacing: 3px;
+      color: var(--text2);
+      margin-bottom: 6px;
+    }
+
+    .section-title {
+      font-family: 'Press Start 2P';
+      font-size: clamp(14px, 2.5vw, 20px);
+      letter-spacing: 2px;
+    }
+
+    .section-rule {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, currentColor, transparent);
+      opacity: 0.3
+    }
+
+    /* ===== QUEST LOG (Experience) ===== */
+    #quests {
+      background: linear-gradient(180deg, transparent, rgba(0, 245, 196, 0.02), transparent)
+    }
+
+    .quest-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px
+    }
+
+    .quest-item {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      padding: 0;
+      transition: all 0.2s;
+      overflow: hidden;
+      cursor: none;
+    }
+
+    .quest-item:hover {
+      border-color: var(--accent);
+      background: var(--panel2);
+      box-shadow: 0 0 20px rgba(0, 245, 196, 0.08)
+    }
+
+    .quest-item.active {
+      border-left-color: var(--accent2)
+    }
+
+    .quest-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+    }
+
+    .quest-icon {
+      font-family: 'Press Start 2P';
+      font-size: 16px;
+      width: 36px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .quest-meta {
+      flex: 1
+    }
+
+    .quest-company {
+      font-family: 'Press Start 2P';
+      font-size: 9px;
+      color: var(--accent);
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .quest-role {
+      font-size: 13px;
+      color: var(--text2);
+      font-family: 'VT323';
+      letter-spacing: 2px
+    }
+
+    .quest-date {
+      font-family: 'Press Start 2P';
+      font-size: 7px;
+      color: var(--text2);
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .quest-status {
+      font-family: 'Press Start 2P';
+      font-size: 6px;
+      padding: 4px 8px;
+      border: 1px solid;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    .status-active {
+      color: var(--green);
+      border-color: var(--green);
+      background: rgba(68, 255, 136, 0.1);
+      animation: blink 2s steps(1) infinite
+    }
+
+    .status-done {
+      color: var(--text2);
+      border-color: var(--border)
+    }
+
+    .quest-body {
+      padding: 0 20px 16px 72px;
+      display: none;
+    }
+
+    .quest-item.open .quest-body {
+      display: block
+    }
+
+    .quest-bullets {
+      list-style: none
+    }
+
+    .quest-bullets li {
+      font-size: 14px;
+      color: var(--text2);
+      padding: 4px 0 4px 20px;
+      position: relative;
+      line-height: 1.5;
+    }
+
+    .quest-bullets li::before {
+      content: '◆';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-size: 10px;
+      top: 6px
+    }
+
+    .quest-xp {
+      display: inline-block;
+      margin-top: 10px;
+      font-family: 'Press Start 2P';
+      font-size: 7px;
+      color: var(--accent4);
+      border: 1px solid var(--accent4);
+      padding: 4px 10px;
+      background: rgba(255, 215, 0, 0.08);
+    }
+
+    /* ===== TREASURE CHESTS (Projects) ===== */
+    #treasures {
+      background: linear-gradient(180deg, transparent, rgba(255, 107, 53, 0.02), transparent)
+    }
+
+    .chest-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .chest {
+      position: relative;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 24px;
+      cursor: none;
+      transition: all 0.25s;
+      overflow: hidden;
+    }
+
+    .chest::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 60%, rgba(255, 107, 53, 0.05));
+      transition: all 0.3s;
+    }
+
+    .chest:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4)
+    }
+
+    .chest:hover::before {
+      background: linear-gradient(135deg, transparent 40%, rgba(255, 107, 53, 0.1))
+    }
+
+    .chest-lid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      transition: all 0.3s;
+    }
+
+    .chest-corner {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border: 2px solid;
+      opacity: 0.5;
+    }
+
+    .chest-corner.tl {
+      top: 8px;
+      left: 8px;
+      border-right: none;
+      border-bottom: none
+    }
+
+    .chest-corner.tr {
+      top: 8px;
+      right: 8px;
+      border-left: none;
+      border-bottom: none
+    }
+
+    .chest-corner.bl {
+      bottom: 8px;
+      left: 8px;
+      border-right: none;
+      border-top: none
+    }
+
+    .chest-corner.br {
+      bottom: 8px;
+      right: 8px;
+      border-left: none;
+      border-top: none
+    }
+
+    .chest-icon-wrap {
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin-bottom: 16px;
+      border: 2px solid var(--border);
+      background: var(--bg);
+      position: relative;
+    }
+
+    .chest-icon-wrap::after {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border: 1px solid;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .chest:hover .chest-icon-wrap::after {
+      opacity: 0.5
+    }
+
+    .chest-name {
+      font-family: 'Press Start 2P';
+      font-size: 10px;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+      line-height: 1.6;
+    }
+
+    .chest-type {
+      font-family: 'VT323';
+      font-size: 16px;
+      color: var(--text2);
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+    }
+
+    .chest-desc {
+      font-size: 13px;
+      color: var(--text2);
+      line-height: 1.65;
+      margin-bottom: 16px;
+      font-weight: 300;
+    }
+
+    .chest-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px
+    }
+
+    .chest-tag {
+      font-family: 'Press Start 2P';
+      font-size: 6px;
+      padding: 4px 8px;
+      border: 1px solid;
+      letter-spacing: 1px;
+    }
+
+    .chest-action {
+      font-family: 'Press Start 2P';
+      font-size: 7px;
+      color: var(--bg);
+      padding: 8px 14px;
+      border: none;
+      cursor: none;
+      transition: all 0.2s;
+      letter-spacing: 1px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .chest-action::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.2);
+      transition: left 0.3s;
+    }
+
+    .chest-action:hover::before {
+      left: 100%
+    }
+
+    .chest-date {
+      font-family: 'Press Start 2P';
+      font-size: 6px;
+      color: var(--text2);
+      margin-top: 10px;
+      opacity: 0.6;
+    }
+
+    /* Color variants per chest */
+    .chest-c1 {
+      border-top-color: var(--accent)
+    }
+
+    .chest-c1 .chest-lid {
+      background: var(--accent)
+    }
+
+    .chest-c1 .chest-corner {
+      border-color: var(--accent)
+    }
+
+    .chest-c1 .chest-name {
+      color: var(--accent)
+    }
+
+    .chest-c1 .chest-icon-wrap::after {
+      border-color: var(--accent)
+    }
+
+    .chest-c1 .chest-tag {
+      color: var(--accent);
+      border-color: rgba(0, 245, 196, 0.3)
+    }
+
+    .chest-c1 .chest-action {
+      background: var(--accent)
+    }
+
+    .chest-c1:hover {
+      border-color: var(--accent);
+      box-shadow: 0 8px 32px rgba(0, 245, 196, 0.15)
+    }
+
+    .chest-c2 {
+      border-top-color: var(--accent2)
+    }
+
+    .chest-c2 .chest-lid {
+      background: var(--accent2)
+    }
+
+    .chest-c2 .chest-corner {
+      border-color: var(--accent2)
+    }
+
+    .chest-c2 .chest-name {
+      color: var(--accent2)
+    }
+
+    .chest-c2 .chest-icon-wrap::after {
+      border-color: var(--accent2)
+    }
+
+    .chest-c2 .chest-tag {
+      color: var(--accent2);
+      border-color: rgba(255, 107, 53, 0.3)
+    }
+
+    .chest-c2 .chest-action {
+      background: var(--accent2)
+    }
+
+    .chest-c2:hover {
+      border-color: var(--accent2);
+      box-shadow: 0 8px 32px rgba(255, 107, 53, 0.15)
+    }
+
+    .chest-c3 {
+      border-top-color: var(--accent3)
+    }
+
+    .chest-c3 .chest-lid {
+      background: var(--accent3)
+    }
+
+    .chest-c3 .chest-corner {
+      border-color: var(--accent3)
+    }
+
+    .chest-c3 .chest-name {
+      color: var(--accent3)
+    }
+
+    .chest-c3 .chest-icon-wrap::after {
+      border-color: var(--accent3)
+    }
+
+    .chest-c3 .chest-tag {
+      color: var(--accent3);
+      border-color: rgba(168, 85, 247, 0.3)
+    }
+
+    .chest-c3 .chest-action {
+      background: var(--accent3)
+    }
+
+    .chest-c3:hover {
+      border-color: var(--accent3);
+      box-shadow: 0 8px 32px rgba(168, 85, 247, 0.15)
+    }
+
+    .chest-c4 {
+      border-top-color: var(--accent4)
+    }
+
+    .chest-c4 .chest-lid {
+      background: var(--accent4)
+    }
+
+    .chest-c4 .chest-corner {
+      border-color: var(--accent4)
+    }
+
+    .chest-c4 .chest-name {
+      color: var(--accent4)
+    }
+
+    .chest-c4 .chest-icon-wrap::after {
+      border-color: var(--accent4)
+    }
+
+    .chest-c4 .chest-tag {
+      color: var(--accent4);
+      border-color: rgba(255, 215, 0, 0.3)
+    }
+
+    .chest-c4 .chest-action {
+      background: var(--accent4);
+      color: #1a1a00
+    }
+
+    .chest-c4:hover {
+      border-color: var(--accent4);
+      box-shadow: 0 8px 32px rgba(255, 215, 0, 0.15)
+    }
+
+    /* Chest modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 5000;
+      background: rgba(0, 0, 0, 0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+      cursor: none;
+    }
+
+    .modal-backdrop.open {
+      display: flex
+    }
+
+    .modal-box {
+      background: var(--panel);
+      border: 1px solid var(--border2);
+      max-width: 560px;
+      width: 90%;
+      position: relative;
+      animation: modal-in 0.2s ease-out;
+    }
+
+    @keyframes modal-in {
+      from {
+        transform: scale(0.9) translateY(20px);
+        opacity: 0
+      }
+
+      to {
+        transform: none;
+        opacity: 1
+      }
+    }
+
+    .modal-bar {
+      height: 4px;
+      width: 100%;
+    }
+
+    .modal-content {
+      padding: 28px
+    }
+
+    .modal-pretitle {
+      font-family: 'Press Start 2P';
+      font-size: 7px;
+      color: var(--text2);
+      letter-spacing: 3px;
+      margin-bottom: 12px;
+    }
+
+    .modal-title {
+      font-family: 'Press Start 2P';
+      font-size: 14px;
+      margin-bottom: 6px;
+      line-height: 1.6;
+    }
+
+    .modal-subtitle {
+      font-family: 'VT323';
+      font-size: 18px;
+      color: var(--text2);
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+    }
+
+    .modal-body {
+      font-size: 14px;
+      color: var(--text2);
+      line-height: 1.7;
+      margin-bottom: 20px;
+      font-weight: 300;
+    }
+
+    .modal-tech-title {
+      font-family: 'Press Start 2P';
+      font-size: 7px;
+      color: var(--text2);
+      margin-bottom: 10px;
+      letter-spacing: 2px;
+    }
+
+    .modal-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 24px
+    }
+
+    .modal-tag {
+      font-family: 'Press Start 2P';
+      font-size: 6px;
+      padding: 5px 10px;
+      border: 1px solid;
+      letter-spacing: 1px;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      font-family: 'Press Start 2P';
+      font-size: 8px;
+      color: var(--text2);
+      background: none;
+      border: 1px solid var(--border);
+      padding: 6px 10px;
+      cursor: none;
+      transition: all 0.15s;
+    }
+
+    .modal-close:hover {
+      color: var(--red);
+      border-color: var(--red)
+    }
+
+    .modal-footer {
+      border-top: 1px solid var(--border);
+      padding: 16px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-stat {
+      font-family: 'Press Start 2P';
+      font-size: 7px;
+      color: var(--text2)
+    }
+
+    .modal-stat span {
+      color: var(--accent4)
+    }
+
+    /* ===== INVENTORY (Skills) ===== */
+    #inventory {
+      background: linear-gradient(180deg, transparent, rgba(168, 85, 247, 0.02), transparent)
+    }
+
+    .inv-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 8px;
+    }
+
+    .inv-slot {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 16px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: none;
+      transition: all 0.2s;
+      position: relative;
+      text-align: center;
+    }
+
+    .inv-slot:hover {
+      border-color: var(--accent3);
+      background: var(--panel2);
+      transform: scale(1.05);
+      box-shadow: 0 0 16px rgba(168, 85, 247, 0.2)
+    }
+
+    .inv-icon{
+  width:32px;
+  height:32px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  line-height:1;
 }
 
-/* Custom cursor */
-#cursor{
-  position:fixed;width:20px;height:20px;pointer-events:none;z-index:9999;
-  transition:transform 0.1s;
-}
-#cursor::before{
-  content:'';position:absolute;
-  width:0;height:0;
-  border-left:8px solid transparent;
-  border-right:8px solid transparent;
-  border-bottom:14px solid var(--accent);
-  top:0;left:0;
-  image-rendering:pixelated;
-}
-#cursor::after{
-  content:'';position:absolute;
-  width:4px;height:4px;
-  background:var(--accent);
-  bottom:0;left:8px;
-  box-shadow:0 0 8px var(--accent);
-}
-body:hover #cursor{transform:scale(1.2)}
-
-/* Scanline overlay */
-body::after{
-  content:'';position:fixed;top:0;left:0;right:0;bottom:0;
-  background:repeating-linear-gradient(0deg,transparent,transparent 2px,var(--scanline) 2px,var(--scanline) 4px);
-  pointer-events:none;z-index:9000;
+.inv-icon img,
+.inv-icon svg{
+  width:28px;
+  height:28px;
+  object-fit:contain;
+  display:block;
 }
 
-/* Stars background */
-#stars{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
-
-/* Floating particles */
-.particle{
-  position:fixed;pointer-events:none;z-index:1;
-  width:3px;height:3px;background:var(--accent);
-  animation:float-up 4s linear infinite;
-  opacity:0;
-}
-@keyframes float-up{
-  0%{opacity:0;transform:translateY(0) scale(1)}
-  20%{opacity:1}
-  80%{opacity:0.5}
-  100%{opacity:0;transform:translateY(-300px) scale(0)}
+.icon-dual{
+  gap:4px;
 }
 
-/* HUD - Top bar */
-#hud{
-  position:fixed;top:0;left:0;right:0;z-index:1000;
-  background:linear-gradient(180deg,rgba(10,10,18,0.98) 0%,rgba(10,10,18,0.8) 100%);
-  border-bottom:1px solid var(--border);
-  padding:10px 24px;
-  display:flex;align-items:center;justify-content:space-between;
-  backdrop-filter:blur(10px);
-}
-.hud-player{display:flex;align-items:center;gap:12px}
-.player-sprite{
-  width:32px;height:32px;
-  image-rendering:pixelated;
-  position:relative;
-  animation:player-idle 0.8s steps(2) infinite;
-}
-@keyframes player-idle{
-  0%{filter:brightness(1)}
-  50%{filter:brightness(1.3)}
-}
-.player-sprite-inner{
-  width:32px;height:32px;
-  background:var(--accent3);
-  clip-path:polygon(30% 0%,70% 0%,100% 30%,100% 70%,70% 100%,30% 100%,0% 70%,0% 30%);
-  display:flex;align-items:center;justify-content:center;
-  font-family:'Press Start 2P';font-size:10px;color:#fff;
-  box-shadow:0 0 12px var(--accent3);
-}
-.player-name{font-family:'Press Start 2P';font-size:8px;color:var(--accent);letter-spacing:1px}
-.player-class{font-size:11px;color:var(--text2);font-family:'VT323';letter-spacing:2px}
-.hud-stats{display:flex;align-items:center;gap:20px}
-.stat-bar-wrap{display:flex;align-items:center;gap:6px}
-.stat-label{font-family:'Press Start 2P';font-size:6px;color:var(--text2)}
-.stat-bar{width:80px;height:8px;background:#1a1a2e;border:1px solid var(--border);position:relative;overflow:hidden}
-.stat-bar-fill{height:100%;position:relative;transition:width 0.5s}
-.stat-bar-fill::after{content:'';position:absolute;top:0;right:0;bottom:0;width:4px;background:rgba(255,255,255,0.4)}
-.hp-fill{background:linear-gradient(90deg,#1a7a3a,var(--green));width:78%}
-.xp-fill{background:linear-gradient(90deg,#1a1aaa,var(--blue));width:65%}
-.stat-val{font-family:'VT323';font-size:14px;color:var(--text2)}
-.hud-nav{display:flex;gap:4px}
-.nav-btn{
-  font-family:'Press Start 2P';font-size:7px;color:var(--text2);
-  background:var(--panel);border:1px solid var(--border);
-  padding:6px 10px;cursor:none;
-  transition:all 0.15s;letter-spacing:1px;
-  text-decoration:none;display:block;
-}
-.nav-btn:hover{color:var(--accent);border-color:var(--accent);background:rgba(0,245,196,0.08);box-shadow:0 0 12px rgba(0,245,196,0.2)}
-
-/* HERO / WORLD MAP */
-#world{
-  position:relative;min-height:100vh;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:100px 24px 60px;z-index:10;overflow:hidden;
-}
-.world-grid{
-  position:absolute;inset:0;
-  background-image:
-    linear-gradient(rgba(0,245,196,0.04) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(0,245,196,0.04) 1px,transparent 1px);
-  background-size:40px 40px;
-  animation:grid-move 20s linear infinite;
-}
-@keyframes grid-move{from{background-position:0 0}to{background-position:40px 40px}}
-
-.world-title-wrap{text-align:center;position:relative;z-index:2}
-.world-tag{
-  font-family:'Press Start 2P';font-size:8px;color:var(--accent2);
-  letter-spacing:3px;margin-bottom:16px;
-  animation:blink 1.5s steps(1) infinite;
-}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-.world-name{
-  font-family:'Press Start 2P';font-size:clamp(18px,4vw,36px);
-  color:#fff;line-height:1.6;
-  text-shadow:0 0 30px rgba(0,245,196,0.5),0 0 60px rgba(0,245,196,0.2);
-  letter-spacing:2px;
-}
-.world-name span{color:var(--accent)}
-.world-subtitle{
-  font-family:'VT323';font-size:24px;color:var(--text2);
-  margin-top:12px;letter-spacing:4px;
-}
-.world-desc{
-  max-width:500px;margin:24px auto;
-  font-size:15px;color:var(--text2);line-height:1.7;
-  font-family:'Rajdhani';font-weight:300;
+.icon-dual img{
+  width:14px;
+  height:14px;
 }
 
-/* Terrain zones */
-.zones{
-  display:flex;gap:12px;margin-top:32px;flex-wrap:wrap;justify-content:center;
-}
-.zone-btn{
-  font-family:'Press Start 2P';font-size:7px;
-  padding:12px 16px;border:1px solid;cursor:none;
-  transition:all 0.2s;letter-spacing:1px;
-  position:relative;overflow:hidden;
-  text-decoration:none;display:inline-block;
-}
-.zone-btn::before{
-  content:'▶ ';font-size:7px;
-}
-.zone-btn.z1{color:var(--accent);border-color:var(--accent);background:rgba(0,245,196,0.06)}
-.zone-btn.z1:hover{background:rgba(0,245,196,0.15);box-shadow:0 0 20px rgba(0,245,196,0.3)}
-.zone-btn.z2{color:var(--accent2);border-color:var(--accent2);background:rgba(255,107,53,0.06)}
-.zone-btn.z2:hover{background:rgba(255,107,53,0.15);box-shadow:0 0 20px rgba(255,107,53,0.3)}
-.zone-btn.z3{color:var(--accent3);border-color:var(--accent3);background:rgba(168,85,247,0.06)}
-.zone-btn.z3:hover{background:rgba(168,85,247,0.15);box-shadow:0 0 20px rgba(168,85,247,0.3)}
-.zone-btn.z4{color:var(--accent4);border-color:var(--accent4);background:rgba(255,215,0,0.06)}
-.zone-btn.z4:hover{background:rgba(255,215,0,0.15);box-shadow:0 0 20px rgba(255,215,0,0.3)}
-
-/* floating runes */
-.rune{
-  position:absolute;font-family:'Press Start 2P';font-size:10px;
-  color:rgba(0,245,196,0.2);pointer-events:none;
-  animation:rune-float 6s ease-in-out infinite;
-}
-@keyframes rune-float{
-  0%,100%{transform:translateY(0) rotate(0deg);opacity:0.2}
-  50%{transform:translateY(-20px) rotate(5deg);opacity:0.5}
+.inv-text-logo{
+  font-family:'Press Start 2P';
+  font-size:10px;
+  color:var(--blue);
+  border:1px solid currentColor;
+  width:28px;
+  height:28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(68,136,255,0.08);
+  box-shadow:0 0 10px rgba(68,136,255,0.15);
+  letter-spacing:0;
 }
 
-/* ===== SECTIONS ===== */
-.section{
-  position:relative;z-index:10;
-  padding:80px 24px;
-  max-width:1100px;margin:0 auto;
-}
-.section-header{
-  display:flex;align-items:center;gap:16px;
-  margin-bottom:48px;
-}
-.section-icon{
-  font-family:'Press Start 2P';font-size:20px;
-  width:48px;height:48px;
-  border:2px solid currentColor;
-  display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;
-}
-.section-title-wrap{}
-.section-pretitle{
-  font-family:'Press Start 2P';font-size:7px;letter-spacing:3px;
-  color:var(--text2);margin-bottom:6px;
-}
-.section-title{
-  font-family:'Press Start 2P';font-size:clamp(14px,2.5vw,20px);
-  letter-spacing:2px;
-}
-.section-rule{flex:1;height:1px;background:linear-gradient(90deg,currentColor,transparent);opacity:0.3}
-
-/* ===== QUEST LOG (Experience) ===== */
-#quests{background:linear-gradient(180deg,transparent,rgba(0,245,196,0.02),transparent)}
-.quest-list{display:flex;flex-direction:column;gap:8px}
-.quest-item{
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-left:3px solid var(--accent);
-  padding:0;
-  transition:all 0.2s;
-  overflow:hidden;
-  cursor:none;
-}
-.quest-item:hover{border-color:var(--accent);background:var(--panel2);box-shadow:0 0 20px rgba(0,245,196,0.08)}
-.quest-item.active{border-left-color:var(--accent2)}
-.quest-header{
-  display:flex;align-items:center;gap:16px;
-  padding:16px 20px;
-}
-.quest-icon{
-  font-family:'Press Start 2P';font-size:16px;width:36px;text-align:center;flex-shrink:0;
-}
-.quest-meta{flex:1}
-.quest-company{
-  font-family:'Press Start 2P';font-size:9px;
-  color:var(--accent);letter-spacing:1px;margin-bottom:4px;
-}
-.quest-role{font-size:13px;color:var(--text2);font-family:'VT323';letter-spacing:2px}
-.quest-date{
-  font-family:'Press Start 2P';font-size:7px;color:var(--text2);
-  text-align:right;flex-shrink:0;
-}
-.quest-status{
-  font-family:'Press Start 2P';font-size:6px;
-  padding:4px 8px;border:1px solid;
-  margin-left:auto;flex-shrink:0;
-}
-.status-active{color:var(--green);border-color:var(--green);background:rgba(68,255,136,0.1);animation:blink 2s steps(1) infinite}
-.status-done{color:var(--text2);border-color:var(--border)}
-.quest-body{
-  padding:0 20px 16px 72px;
-  display:none;
-}
-.quest-item.open .quest-body{display:block}
-.quest-bullets{list-style:none}
-.quest-bullets li{
-  font-size:14px;color:var(--text2);
-  padding:4px 0 4px 20px;position:relative;
-  line-height:1.5;
-}
-.quest-bullets li::before{content:'◆';position:absolute;left:0;color:var(--accent);font-size:10px;top:6px}
-.quest-xp{
-  display:inline-block;margin-top:10px;
-  font-family:'Press Start 2P';font-size:7px;
-  color:var(--accent4);border:1px solid var(--accent4);
-  padding:4px 10px;background:rgba(255,215,0,0.08);
+.inv-slot:hover .inv-icon img,
+.inv-slot:hover .inv-icon svg,
+.inv-slot:hover .inv-text-logo{
+  transform:scale(1.08);
+  transition:transform 0.2s ease;
 }
 
-/* ===== TREASURE CHESTS (Projects) ===== */
-#treasures{background:linear-gradient(180deg,transparent,rgba(255,107,53,0.02),transparent)}
-.chest-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:16px;
-}
-.chest{
-  position:relative;
-  background:var(--panel);
-  border:1px solid var(--border);
-  padding:24px;
-  cursor:none;
-  transition:all 0.25s;
-  overflow:hidden;
-}
-.chest::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,transparent 60%,rgba(255,107,53,0.05));
-  transition:all 0.3s;
-}
-.chest:hover{transform:translateY(-4px);box-shadow:0 8px 32px rgba(0,0,0,0.4)}
-.chest:hover::before{background:linear-gradient(135deg,transparent 40%,rgba(255,107,53,0.1))}
-.chest-lid{
-  position:absolute;top:0;left:0;right:0;height:4px;
-  transition:all 0.3s;
-}
-.chest-corner{
-  position:absolute;width:8px;height:8px;border:2px solid;
-  opacity:0.5;
-}
-.chest-corner.tl{top:8px;left:8px;border-right:none;border-bottom:none}
-.chest-corner.tr{top:8px;right:8px;border-left:none;border-bottom:none}
-.chest-corner.bl{bottom:8px;left:8px;border-right:none;border-top:none}
-.chest-corner.br{bottom:8px;right:8px;border-left:none;border-top:none}
-.chest-icon-wrap{
-  width:56px;height:56px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:28px;margin-bottom:16px;
-  border:2px solid var(--border);
-  background:var(--bg);
-  position:relative;
-}
-.chest-icon-wrap::after{
-  content:'';
-  position:absolute;inset:-1px;
-  border:1px solid;
-  opacity:0;transition:opacity 0.3s;
-}
-.chest:hover .chest-icon-wrap::after{opacity:0.5}
-.chest-name{
-  font-family:'Press Start 2P';font-size:10px;
-  margin-bottom:8px;letter-spacing:1px;
-  line-height:1.6;
-}
-.chest-type{
-  font-family:'VT323';font-size:16px;color:var(--text2);
-  letter-spacing:2px;margin-bottom:12px;
-}
-.chest-desc{
-  font-size:13px;color:var(--text2);line-height:1.65;
-  margin-bottom:16px;font-weight:300;
-}
-.chest-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
-.chest-tag{
-  font-family:'Press Start 2P';font-size:6px;
-  padding:4px 8px;border:1px solid;
-  letter-spacing:1px;
-}
-.chest-action{
-  font-family:'Press Start 2P';font-size:7px;
-  color:var(--bg);padding:8px 14px;
-  border:none;cursor:none;
-  transition:all 0.2s;letter-spacing:1px;
-  position:relative;overflow:hidden;
-}
-.chest-action::before{
-  content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
-  background:rgba(255,255,255,0.2);transition:left 0.3s;
-}
-.chest-action:hover::before{left:100%}
-.chest-date{
-  font-family:'Press Start 2P';font-size:6px;color:var(--text2);
-  margin-top:10px;opacity:0.6;
-}
 
-/* Color variants per chest */
-.chest-c1{border-top-color:var(--accent)}
-.chest-c1 .chest-lid{background:var(--accent)}
-.chest-c1 .chest-corner{border-color:var(--accent)}
-.chest-c1 .chest-name{color:var(--accent)}
-.chest-c1 .chest-icon-wrap::after{border-color:var(--accent)}
-.chest-c1 .chest-tag{color:var(--accent);border-color:rgba(0,245,196,0.3)}
-.chest-c1 .chest-action{background:var(--accent)}
-.chest-c1:hover{border-color:var(--accent);box-shadow:0 8px 32px rgba(0,245,196,0.15)}
+    .inv-name {
+      font-family: 'Press Start 2P';
+      font-size: 6px;
+      color: var(--text2);
+      letter-spacing: 0.5px;
+      line-height: 1.6
+    }
 
-.chest-c2{border-top-color:var(--accent2)}
-.chest-c2 .chest-lid{background:var(--accent2)}
-.chest-c2 .chest-corner{border-color:var(--accent2)}
-.chest-c2 .chest-name{color:var(--accent2)}
-.chest-c2 .chest-icon-wrap::after{border-color:var(--accent2)}
-.chest-c2 .chest-tag{color:var(--accent2);border-color:rgba(255,107,53,0.3)}
-.chest-c2 .chest-action{background:var(--accent2)}
-.chest-c2:hover{border-color:var(--accent2);box-shadow:0 8px 32px rgba(255,107,53,0.15)}
+    .inv-level {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      font-family: 'Press Start 2P';
+      font-size: 5px;
+      color: var(--accent4);
+    }
 
-.chest-c3{border-top-color:var(--accent3)}
-.chest-c3 .chest-lid{background:var(--accent3)}
-.chest-c3 .chest-corner{border-color:var(--accent3)}
-.chest-c3 .chest-name{color:var(--accent3)}
-.chest-c3 .chest-icon-wrap::after{border-color:var(--accent3)}
-.chest-c3 .chest-tag{color:var(--accent3);border-color:rgba(168,85,247,0.3)}
-.chest-c3 .chest-action{background:var(--accent3)}
-.chest-c3:hover{border-color:var(--accent3);box-shadow:0 8px 32px rgba(168,85,247,0.15)}
+    .inv-slot.legendary {
+      border-color: var(--accent4);
+      background: rgba(255, 215, 0, 0.04)
+    }
 
-.chest-c4{border-top-color:var(--accent4)}
-.chest-c4 .chest-lid{background:var(--accent4)}
-.chest-c4 .chest-corner{border-color:var(--accent4)}
-.chest-c4 .chest-name{color:var(--accent4)}
-.chest-c4 .chest-icon-wrap::after{border-color:var(--accent4)}
-.chest-c4 .chest-tag{color:var(--accent4);border-color:rgba(255,215,0,0.3)}
-.chest-c4 .chest-action{background:var(--accent4);color:#1a1a00}
-.chest-c4:hover{border-color:var(--accent4);box-shadow:0 8px 32px rgba(255,215,0,0.15)}
+    .inv-slot.legendary .inv-name {
+      color: var(--accent4)
+    }
 
-/* Chest modal */
-.modal-backdrop{
-  position:fixed;inset:0;z-index:5000;
-  background:rgba(0,0,0,0.85);
-  display:none;align-items:center;justify-content:center;
-  backdrop-filter:blur(4px);
-  cursor:none;
-}
-.modal-backdrop.open{display:flex}
-.modal-box{
-  background:var(--panel);
-  border:1px solid var(--border2);
-  max-width:560px;width:90%;
-  position:relative;
-  animation:modal-in 0.2s ease-out;
-}
-@keyframes modal-in{from{transform:scale(0.9) translateY(20px);opacity:0}to{transform:none;opacity:1}}
-.modal-bar{
-  height:4px;width:100%;
-}
-.modal-content{padding:28px}
-.modal-pretitle{
-  font-family:'Press Start 2P';font-size:7px;
-  color:var(--text2);letter-spacing:3px;margin-bottom:12px;
-}
-.modal-title{
-  font-family:'Press Start 2P';font-size:14px;
-  margin-bottom:6px;line-height:1.6;
-}
-.modal-subtitle{
-  font-family:'VT323';font-size:18px;color:var(--text2);
-  letter-spacing:2px;margin-bottom:20px;
-}
-.modal-body{
-  font-size:14px;color:var(--text2);line-height:1.7;
-  margin-bottom:20px;font-weight:300;
-}
-.modal-tech-title{
-  font-family:'Press Start 2P';font-size:7px;color:var(--text2);
-  margin-bottom:10px;letter-spacing:2px;
-}
-.modal-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px}
-.modal-tag{
-  font-family:'Press Start 2P';font-size:6px;
-  padding:5px 10px;border:1px solid;letter-spacing:1px;
-}
-.modal-close{
-  position:absolute;top:16px;right:16px;
-  font-family:'Press Start 2P';font-size:8px;color:var(--text2);
-  background:none;border:1px solid var(--border);
-  padding:6px 10px;cursor:none;
-  transition:all 0.15s;
-}
-.modal-close:hover{color:var(--red);border-color:var(--red)}
-.modal-footer{
-  border-top:1px solid var(--border);
-  padding:16px 28px;
-  display:flex;align-items:center;justify-content:space-between;
-}
-.modal-stat{font-family:'Press Start 2P';font-size:7px;color:var(--text2)}
-.modal-stat span{color:var(--accent4)}
+    .inv-slot.epic {
+      border-color: var(--accent3)
+    }
 
-/* ===== INVENTORY (Skills) ===== */
-#inventory{background:linear-gradient(180deg,transparent,rgba(168,85,247,0.02),transparent)}
-.inv-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(100px,1fr));
-  gap:8px;
-}
-.inv-slot{
-  background:var(--panel);
-  border:1px solid var(--border);
-  padding:16px 8px;
-  display:flex;flex-direction:column;align-items:center;gap:8px;
-  cursor:none;transition:all 0.2s;
-  position:relative;
-  text-align:center;
-}
-.inv-slot:hover{border-color:var(--accent3);background:var(--panel2);transform:scale(1.05);box-shadow:0 0 16px rgba(168,85,247,0.2)}
-.inv-icon{font-size:24px;line-height:1}
-.inv-name{font-family:'Press Start 2P';font-size:6px;color:var(--text2);letter-spacing:0.5px;line-height:1.6}
-.inv-level{
-  position:absolute;top:4px;right:4px;
-  font-family:'Press Start 2P';font-size:5px;
-  color:var(--accent4);
-}
-.inv-slot.legendary{border-color:var(--accent4);background:rgba(255,215,0,0.04)}
-.inv-slot.legendary .inv-name{color:var(--accent4)}
-.inv-slot.epic{border-color:var(--accent3)}
-.inv-slot.epic .inv-name{color:var(--accent3)}
-.inv-slot.rare{border-color:var(--blue)}
-.inv-slot.rare .inv-name{color:var(--blue)}
-.inv-section-title{
-  font-family:'Press Start 2P';font-size:8px;
-  color:var(--text2);letter-spacing:2px;
-  margin:24px 0 12px;
-  display:flex;align-items:center;gap:10px;
-}
-.inv-section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+    .inv-slot.epic .inv-name {
+      color: var(--accent3)
+    }
 
-/* ===== CONTACT / GUILD HALL ===== */
-#guild{text-align:center;padding:80px 24px 120px}
-.guild-title{
-  font-family:'Press Start 2P';font-size:clamp(16px,3vw,28px);
-  color:var(--accent);margin-bottom:16px;
-  text-shadow:0 0 20px rgba(0,245,196,0.4);
-}
-.guild-sub{
-  font-family:'VT323';font-size:22px;color:var(--text2);
-  letter-spacing:3px;margin-bottom:40px;
-}
-.guild-links{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.guild-link{
-  font-family:'Press Start 2P';font-size:8px;
-  padding:14px 20px;border:1px solid;
-  cursor:none;transition:all 0.2s;
-  text-decoration:none;display:flex;align-items:center;gap:8px;
-  letter-spacing:1px;
-}
-.gl-email{color:var(--accent);border-color:var(--accent)}
-.gl-email:hover{background:rgba(0,245,196,0.1);box-shadow:0 0 20px rgba(0,245,196,0.2)}
-.gl-github{color:var(--accent3);border-color:var(--accent3)}
-.gl-github:hover{background:rgba(168,85,247,0.1);box-shadow:0 0 20px rgba(168,85,247,0.2)}
-.gl-linkedin{color:var(--blue);border-color:var(--blue)}
-.gl-linkedin:hover{background:rgba(68,136,255,0.1);box-shadow:0 0 20px rgba(68,136,255,0.2)}
+    .inv-slot.rare {
+      border-color: var(--blue)
+    }
 
-/* Notification toast */
-#toast{
-  position:fixed;bottom:24px;right:24px;z-index:8000;
-  font-family:'Press Start 2P';font-size:8px;
-  background:var(--panel);border:1px solid var(--accent);
-  color:var(--accent);padding:12px 16px;
-  transform:translateY(100px);opacity:0;
-  transition:all 0.3s;letter-spacing:1px;
-  pointer-events:none;
-  box-shadow:0 0 20px rgba(0,245,196,0.2);
-}
-#toast.show{transform:translateY(0);opacity:1}
+    .inv-slot.rare .inv-name {
+      color: var(--blue)
+    }
 
-/* Level up animation */
-.lvlup{
-  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
-  z-index:7000;pointer-events:none;
-  font-family:'Press Start 2P';font-size:clamp(24px,5vw,48px);
-  color:var(--accent4);
-  text-shadow:0 0 30px var(--accent4);
-  animation:lvlup-anim 1.5s ease-out forwards;
-  display:none;
-}
-@keyframes lvlup-anim{
-  0%{opacity:0;transform:translate(-50%,-50%) scale(0.5)}
-  30%{opacity:1;transform:translate(-50%,-50%) scale(1.2)}
-  60%{opacity:1;transform:translate(-50%,-50%) scale(1)}
-  100%{opacity:0;transform:translate(-50%,-80%) scale(0.8)}
-}
+    .inv-section-title {
+      font-family: 'Press Start 2P';
+      font-size: 8px;
+      color: var(--text2);
+      letter-spacing: 2px;
+      margin: 24px 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-/* Scroll indicator */
-.scroll-hint{
-  position:absolute;bottom:30px;left:50%;transform:translateX(-50%);
-  font-family:'Press Start 2P';font-size:7px;color:var(--text2);
-  letter-spacing:2px;text-align:center;
-  animation:scroll-pulse 2s ease-in-out infinite;
-}
-@keyframes scroll-pulse{0%,100%{opacity:0.4;transform:translateX(-50%) translateY(0)}50%{opacity:1;transform:translateX(-50%) translateY(-6px)}}
-.scroll-arrow{display:block;margin-top:8px;text-align:center;font-size:16px}
+    .inv-section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border)
+    }
 
-/* Pixel art decorations */
-.pixel-deco{
-  position:absolute;pointer-events:none;
-  font-family:'Press Start 2P';opacity:0.12;font-size:12px;
-  color:var(--accent);
-}
+    /* ===== CONTACT / GUILD HALL ===== */
+    #guild {
+      text-align: center;
+      padding: 80px 24px 120px
+    }
 
-/* Currently section */
-.currently-wrap{
-  display:flex;gap:12px;flex-wrap:wrap;margin-top:-24px;margin-bottom:48px;
-}
-.currently-pill{
-  background:var(--panel);border:1px solid var(--border);
-  padding:8px 14px;display:flex;align-items:center;gap:8px;
-}
-.currently-dot{width:6px;height:6px;border-radius:0;background:var(--green);animation:blink 1s steps(1) infinite}
-.currently-text{font-family:'VT323';font-size:16px;color:var(--text2);letter-spacing:1px}
-.currently-val{color:var(--green);font-weight:600}
+    .guild-title {
+      font-family: 'Press Start 2P';
+      font-size: clamp(16px, 3vw, 28px);
+      color: var(--accent);
+      margin-bottom: 16px;
+      text-shadow: 0 0 20px rgba(0, 245, 196, 0.4);
+    }
 
-/* footer */
-footer{
-  text-align:center;padding:20px;
-  border-top:1px solid var(--border);
-  font-family:'Press Start 2P';font-size:7px;color:var(--text2);
-  letter-spacing:2px;position:relative;z-index:10;
-}
+    .guild-sub {
+      font-family: 'VT323';
+      font-size: 22px;
+      color: var(--text2);
+      letter-spacing: 3px;
+      margin-bottom: 40px;
+    }
 
-/* Responsive */
-@media(max-width:600px){
-  #hud{padding:8px 12px}
-  .hud-stats{display:none}
-  .nav-btn{font-size:6px;padding:5px 7px}
-  .chest-grid{grid-template-columns:1fr}
-  .inv-grid{grid-template-columns:repeat(auto-fill,minmax(80px,1fr))}
-}
-</style>
+    .guild-links {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap
+    }
+
+    .guild-link {
+      font-family: 'Press Start 2P';
+      font-size: 8px;
+      padding: 14px 20px;
+      border: 1px solid;
+      cursor: none;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: 1px;
+    }
+
+    .gl-email {
+      color: var(--accent);
+      border-color: var(--accent)
+    }
+
+    .gl-email:hover {
+      background: rgba(0, 245, 196, 0.1);
+      box-shadow: 0 0 20px rgba(0, 245, 196, 0.2)
+    }
+
+    .gl-github {
+      color: var(--accent3);
+      border-color: var(--accent3)
+    }
+
+    .gl-github:hover {
+      background: rgba(168, 85, 247, 0.1);
+      box-shadow: 0 0 20px rgba(168, 85, 247, 0.2)
+    }
+
+    .gl-linkedin {
+      color: var(--blue);
+      border-color: var(--blue)
+    }
+
+    .gl-linkedin:hover {
+      background: rgba(68, 136, 255, 0.1);
+      box-shadow: 0 0 20px rgba(68, 136, 255, 0.2)
+    }
+
+    /* Notification toast */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 8000;
+      font-family: 'Press Start 2P';
+      font-size: 8px;
+      background: var(--panel);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 12px 16px;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s;
+      letter-spacing: 1px;
+      pointer-events: none;
+      box-shadow: 0 0 20px rgba(0, 245, 196, 0.2);
+    }
+
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1
+    }
+
+    /* Level up animation */
+    .lvlup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 7000;
+      pointer-events: none;
+      font-family: 'Press Start 2P';
+      font-size: clamp(24px, 5vw, 48px);
+      color: var(--accent4);
+      text-shadow: 0 0 30px var(--accent4);
+      animation: lvlup-anim 1.5s ease-out forwards;
+      display: none;
+    }
+
+    @keyframes lvlup-anim {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5)
+      }
+
+      30% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.2)
+      }
+
+      60% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1)
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -80%) scale(0.8)
+      }
+    }
+
+    /* Scroll indicator */
+    .scroll-hint {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Press Start 2P';
+      font-size: 7px;
+      color: var(--text2);
+      letter-spacing: 2px;
+      text-align: center;
+      animation: scroll-pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes scroll-pulse {
+
+      0%,
+      100% {
+        opacity: 0.4;
+        transform: translateX(-50%) translateY(0)
+      }
+
+      50% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-6px)
+      }
+    }
+
+    .scroll-arrow {
+      display: block;
+      margin-top: 8px;
+      text-align: center;
+      font-size: 16px
+    }
+
+    /* Pixel art decorations */
+    .pixel-deco {
+      position: absolute;
+      pointer-events: none;
+      font-family: 'Press Start 2P';
+      opacity: 0.12;
+      font-size: 12px;
+      color: var(--accent);
+    }
+
+    /* Currently section */
+    .currently-wrap {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: -24px;
+      margin-bottom: 48px;
+    }
+
+    .currently-pill {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .currently-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 0;
+      background: var(--green);
+      animation: blink 1s steps(1) infinite
+    }
+
+    .currently-text {
+      font-family: 'VT323';
+      font-size: 16px;
+      color: var(--text2);
+      letter-spacing: 1px
+    }
+
+    .currently-val {
+      color: var(--green);
+      font-weight: 600
+    }
+
+    /* footer */
+    footer {
+      text-align: center;
+      padding: 20px;
+      border-top: 1px solid var(--border);
+      font-family: 'Press Start 2P';
+      font-size: 7px;
+      color: var(--text2);
+      letter-spacing: 2px;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Responsive */
+    @media(max-width:600px) {
+      #hud {
+        padding: 8px 12px
+      }
+
+      .hud-stats {
+        display: none
+      }
+
+      .nav-btn {
+        font-size: 6px;
+        padding: 5px 7px
+      }
+
+      .chest-grid {
+        grid-template-columns: 1fr
+      }
+
+      .inv-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr))
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<canvas id="stars"></canvas>
-<div id="cursor"></div>
-<div class="lvlup" id="lvlup">LEVEL UP!</div>
-<div id="toast">+ 100 XP GAINED!</div>
+  <canvas id="stars"></canvas>
+  <div id="cursor"></div>
+  <div class="lvlup" id="lvlup">LEVEL UP!</div>
+  <div id="toast">+ 100 XP GAINED!</div>
 
-<!-- HUD -->
-<nav id="hud">
-  <div class="hud-player">
-    <div class="player-sprite"><div class="player-sprite-inner">SV</div></div>
-    <div>
-      <div class="player-name">SAI_VINOD</div>
-      <div class="player-class">FULLSTACK MAGE · LVL 7</div>
+  <!-- HUD -->
+  <nav id="hud">
+    <div class="hud-player">
+      <div class="player-sprite">
+        <div class="player-sprite-inner">SV</div>
+      </div>
+      <div>
+        <div class="player-name">SAI_VINOD</div>
+        <div class="player-class">FULLSTACK MAGE · LVL 8</div>
+      </div>
     </div>
-  </div>
-  <div class="hud-stats">
-    <div class="stat-bar-wrap">
-      <span class="stat-label">HP</span>
-      <div class="stat-bar"><div class="stat-bar-fill hp-fill"></div></div>
-      <span class="stat-val">78/100</span>
-    </div>
-    <div class="stat-bar-wrap">
-      <span class="stat-label">XP</span>
-      <div class="stat-bar"><div class="stat-bar-fill xp-fill"></div></div>
-      <span class="stat-val">6500</span>
-    </div>
-  </div>
-  <div class="hud-nav">
-    <a href="#quests" class="nav-btn">QUESTS</a>
-    <a href="#treasures" class="nav-btn">ITEMS</a>
-    <a href="#inventory" class="nav-btn">SKILLS</a>
-    <a href="#guild" class="nav-btn">GUILD</a>
-  </div>
-</nav>
-
-<!-- WORLD / HERO -->
-<section id="world">
-  <div class="world-grid"></div>
-  <span class="pixel-deco" style="top:15%;left:5%;animation:rune-float 5s ease-in-out infinite">{ }</span>
-  <span class="pixel-deco" style="top:25%;right:8%;animation:rune-float 7s ease-in-out infinite 1s">[ ]</span>
-  <span class="pixel-deco" style="bottom:30%;left:10%;animation:rune-float 6s ease-in-out infinite 2s">▲</span>
-  <span class="pixel-deco" style="bottom:20%;right:12%;animation:rune-float 8s ease-in-out infinite 0.5s">◆</span>
-  <span class="pixel-deco" style="top:60%;left:3%;animation:rune-float 5.5s ease-in-out infinite 1.5s">═══</span>
-  <span class="pixel-deco" style="top:40%;right:4%;animation:rune-float 6.5s ease-in-out infinite 3s">►</span>
-
-  <div class="world-title-wrap">
-    <div class="world-tag">▶ WELCOME TO MY WORLD ◀ </div>
-    <h1 class="world-name">SAI <span>VINOD</span><br>KONAKANCHI</h1>
-    <div class="world-subtitle">// FULLSTACK DEVELOPER · 8+ YEARS //</div>
-    <p class="world-desc">
-      Welcome to my interactive world. A fullstack mage specialising in MEAN/MERN sorcery — building real-time systems, mobile SDKs, and developer tools across the realms of fintech, SaaS, and cloud infrastructure.
-    </p>
-    <div class="zones">
-      <a href="#quests" class="zone-btn z1">Quest Log</a>
-      <a href="#treasures" class="zone-btn z2">Treasure Vault</a>
-      <a href="#inventory" class="zone-btn z3">Skill Tree</a>
-      <a href="#guild" class="zone-btn z4">Guild Hall</a>
-    </div>
-  </div>
-  <div class="scroll-hint">
-    SCROLL TO EXPLORE
-    <span class="scroll-arrow">▼</span>
-  </div>
-</section>
-
-<!-- QUEST LOG -->
-<section id="quests" class="section" style="color:var(--accent)">
-  <div class="section-header">
-    <div class="section-icon">📜</div>
-    <div class="section-title-wrap">
-      <div class="section-pretitle">// CHAPTER 01</div>
-      <div class="section-title">QUEST LOG</div>
-    </div>
-    <div class="section-rule"></div>
-  </div>
-
-  <div class="currently-wrap">
-    <div class="currently-pill"><div class="currently-dot"></div><span class="currently-text">ACTIVE QUEST: <span class="currently-val">SDE @ FYNO</span></span></div>
-    <div class="currently-pill"><div class="currently-dot" style="background:var(--blue);"></div><span class="currently-text">EXPLORING: <span class="currently-val" style="color:var(--blue)">LLM / REACT NATIVE</span></span></div>
-  </div>
-
-  <div class="quest-list">
-
-    <div class="quest-item active open" onclick="toggleQuest(this)">
-      <div class="quest-header">
-        <div class="quest-icon">⚡</div>
-        <div class="quest-meta">
-          <div class="quest-company">FYNO</div>
-          <div class="quest-role">Software Development Engineer · Bengaluru</div>
+    <div class="hud-stats">
+      <div class="stat-bar-wrap">
+        <span class="stat-label">HP</span>
+        <div class="stat-bar">
+          <div class="stat-bar-fill hp-fill"></div>
         </div>
-        <div class="quest-date">AUG 2022<br>PRESENT</div>
-        <div class="quest-status status-active">● ACTIVE</div>
+        <span class="stat-val">78/100</span>
       </div>
-      <div class="quest-body">
-        <ul class="quest-bullets">
-          <li>Built socket-based notification system guaranteeing 100% message deliverability</li>
-          <li>Developed Mobile SDKs with custom push rendering, improving delivery rate by 30%</li>
-          <li>Deep-integrated WhatsApp &amp; SMS template management for multiple providers</li>
-          <li>Generalized comms provider APIs with Handlebars for rapid integrations</li>
-          <li>Expert-level knowledge of WhatsApp and RCS APIs across providers</li>
-        </ul>
-        <span class="quest-xp">+1400 XP EARNED</span>
-      </div>
-    </div>
-
-    <div class="quest-item" onclick="toggleQuest(this)">
-      <div class="quest-header">
-        <div class="quest-icon">🔍</div>
-        <div class="quest-meta">
-          <div class="quest-company">HIRECT INDIA</div>
-          <div class="quest-role">Senior Software Developer · Bengaluru</div>
+      <div class="stat-bar-wrap">
+        <span class="stat-label">XP</span>
+        <div class="stat-bar">
+          <div class="stat-bar-fill xp-fill"></div>
         </div>
-        <div class="quest-date">JUN 2022<br>AUG 2022</div>
-        <div class="quest-status status-done">✓ DONE</div>
+        <span class="stat-val">6500</span>
       </div>
-      <div class="quest-body">
-        <ul class="quest-bullets">
-          <li>Designed REST endpoints for jobs &amp; candidate search with filtering and pagination</li>
-          <li>Revamped website — load time slashed from 8–12s to 0.8–1.3s (38% Core Web Vitals improvement)</li>
-        </ul>
-        <span class="quest-xp">+300 XP EARNED</span>
+    </div>
+    <div class="hud-nav">
+      <a href="#quests" class="nav-btn">QUESTS</a>
+      <a href="#treasures" class="nav-btn">TREASURES</a>
+      <a href="#inventory" class="nav-btn">SKILLS</a>
+      <a href="#guild" class="nav-btn">GUILD</a>
+    </div>
+  </nav>
+
+  <!-- WORLD / HERO -->
+  <section id="world">
+    <div class="world-grid"></div>
+    <span class="pixel-deco" style="top:15%;left:5%;animation:rune-float 5s ease-in-out infinite">{ }</span>
+    <span class="pixel-deco" style="top:25%;right:8%;animation:rune-float 7s ease-in-out infinite 1s">[ ]</span>
+    <span class="pixel-deco" style="bottom:30%;left:10%;animation:rune-float 6s ease-in-out infinite 2s">▲</span>
+    <span class="pixel-deco" style="bottom:20%;right:12%;animation:rune-float 8s ease-in-out infinite 0.5s">◆</span>
+    <span class="pixel-deco" style="top:60%;left:3%;animation:rune-float 5.5s ease-in-out infinite 1.5s">═══</span>
+    <span class="pixel-deco" style="top:40%;right:4%;animation:rune-float 6.5s ease-in-out infinite 3s">►</span>
+
+    <div class="world-title-wrap">
+      <div class="world-tag">▶ WELCOME TO MY WORLD ◀ </div>
+      <h1 class="world-name">SAI <span>VINOD</span><br>KONAKANCHI</h1>
+      <div class="world-subtitle">// FULLSTACK DEVELOPER · 8+ YEARS //</div>
+      <p class="world-desc">
+        Welcome to my interactive world. A fullstack mage specialising in MEAN/MERN sorcery — building real-time
+        systems, mobile SDKs, and developer tools across the realms of fintech, SaaS, and cloud infrastructure.
+      </p>
+      <div class="zones">
+        <a href="#quests" class="zone-btn z1">Quest Log</a>
+        <a href="#treasures" class="zone-btn z2">Treasure Vault</a>
+        <a href="#inventory" class="zone-btn z3">Skill Tree</a>
+        <a href="#guild" class="zone-btn z4">Guild Hall</a>
+      </div>
+    </div>
+    <div class="scroll-hint">
+      SCROLL TO EXPLORE
+      <span class="scroll-arrow">▼</span>
+    </div>
+  </section>
+
+  <!-- QUEST LOG -->
+  <section id="quests" class="section" style="color:var(--accent)">
+    <div class="section-header">
+      <div class="section-icon">📜</div>
+      <div class="section-title-wrap">
+        <div class="section-pretitle">// CHAPTER 01</div>
+        <div class="section-title">QUEST LOG</div>
+      </div>
+      <div class="section-rule"></div>
+    </div>
+
+    <div class="currently-wrap">
+      <div class="currently-pill">
+        <div class="currently-dot"></div><span class="currently-text">ACTIVE QUEST: <span class="currently-val">SDE @
+            FYNO</span></span>
+      </div>
+      <div class="currently-pill">
+        <div class="currently-dot" style="background:var(--blue);"></div><span class="currently-text">EXPLORING: <span
+            class="currently-val" style="color:var(--blue)">LLM / REACT NATIVE</span></span>
       </div>
     </div>
 
-    <div class="quest-item" onclick="toggleQuest(this)">
-      <div class="quest-header">
-        <div class="quest-icon">📊</div>
-        <div class="quest-meta">
-          <div class="quest-company">FACTSET RESEARCH SYSTEMS</div>
-          <div class="quest-role">Software Engineer III · Hyderabad</div>
+    <div class="quest-list">
+
+      <div class="quest-item active open" onclick="toggleQuest(this)">
+        <div class="quest-header">
+          <div class="quest-icon">⚡</div>
+          <div class="quest-meta">
+            <div class="quest-company">FYNO</div>
+            <div class="quest-role">Software Development Engineer · Bengaluru</div>
+          </div>
+          <div class="quest-date">AUG 2022<br>PRESENT</div>
+          <div class="quest-status status-active">● ACTIVE</div>
         </div>
-        <div class="quest-date">APR 2021<br>JUN 2022</div>
-        <div class="quest-status status-done">✓ DONE</div>
-      </div>
-      <div class="quest-body">
-        <ul class="quest-bullets">
-          <li>Rebuilt application UIs to W3C accessibility standards</li>
-          <li>Delivered financial charts in Vue + ChartIQ with live data streams for thousands of clients</li>
-          <li>Implemented technical studies for charting &amp; advanced financial analysis</li>
-        </ul>
-        <span class="quest-xp">+900 XP EARNED</span>
-      </div>
-    </div>
-
-    <div class="quest-item" onclick="toggleQuest(this)">
-      <div class="quest-header">
-        <div class="quest-icon">☁️</div>
-        <div class="quest-meta">
-          <div class="quest-company">ACTIFIO (GOOGLE CLOUD)</div>
-          <div class="quest-role">Lead Software Engineer · Hyderabad</div>
+        <div class="quest-body">
+          <ul class="quest-bullets">
+            <li>Built socket-based notification system guaranteeing 100% message deliverability</li>
+            <li>Developed Mobile SDKs with custom push rendering, improving delivery rate by 30%</li>
+            <li>Deep-integrated WhatsApp &amp; SMS template management for multiple providers</li>
+            <li>Generalized comms provider APIs with Handlebars for rapid integrations</li>
+            <li>Expert-level knowledge of WhatsApp and RCS APIs across providers</li>
+          </ul>
+          <span class="quest-xp">+1400 XP EARNED</span>
         </div>
-        <div class="quest-date">JUN 2019<br>APR 2021</div>
-        <div class="quest-status status-done">✓ DONE</div>
       </div>
-      <div class="quest-body">
-        <ul class="quest-bullets">
-          <li>Built reusable lazy-load data grid with search, sort &amp; multi-select — adopted app-wide</li>
-          <li>On-demand backup for Generic &amp; SAP Apps — now live on Google Cloud Backup &amp; DR</li>
-        </ul>
-        <span class="quest-xp">+1200 XP EARNED</span>
-      </div>
-    </div>
 
-    <div class="quest-item" onclick="toggleQuest(this)">
-      <div class="quest-header">
-        <div class="quest-icon">🏦</div>
-        <div class="quest-meta">
-          <div class="quest-company">TCS · ICICI BANK</div>
-          <div class="quest-role">Systems Engineer · Hyderabad</div>
+      <div class="quest-item" onclick="toggleQuest(this)">
+        <div class="quest-header">
+          <div class="quest-icon">🔍</div>
+          <div class="quest-meta">
+            <div class="quest-company">HIRECT INDIA</div>
+            <div class="quest-role">Senior Software Developer · Bengaluru</div>
+          </div>
+          <div class="quest-date">JUN 2022<br>AUG 2022</div>
+          <div class="quest-status status-done">✓ DONE</div>
         </div>
-        <div class="quest-date">JUL 2017<br>JUN 2019</div>
-        <div class="quest-status status-done">✓ DONE</div>
-      </div>
-      <div class="quest-body">
-        <ul class="quest-bullets">
-          <li>Developed UPI &amp; UPI 2.0 (Quickpay by ICICI) alongside NPCI</li>
-          <li>Implemented Video KYC &amp; Quick Remittance on Money2India Europe</li>
-          <li>Introduced offline-first mode for RIBG field app via SQLite sync</li>
-        </ul>
-        <span class="quest-xp">+1200 XP EARNED</span>
-      </div>
-    </div>
-
-    <div class="quest-item" onclick="toggleQuest(this)">
-      <div class="quest-header">
-        <div class="quest-icon">🌱</div>
-        <div class="quest-meta">
-          <div class="quest-company">DARWINBOX</div>
-          <div class="quest-role">Frontend Intern · Hyderabad</div>
+        <div class="quest-body">
+          <ul class="quest-bullets">
+            <li>Designed REST endpoints for jobs &amp; candidate search with filtering and pagination</li>
+            <li>Revamped website — load time slashed from 8–12s to 0.8–1.3s (38% Core Web Vitals improvement)</li>
+          </ul>
+          <span class="quest-xp">+300 XP EARNED</span>
         </div>
-        <div class="quest-date">AUG 2016<br>JAN 2017</div>
-        <div class="quest-status status-done">✓ DONE</div>
       </div>
-      <div class="quest-body">
-        <ul class="quest-bullets">
-          <li>Built auto-invoicing module for pay-as-you-go SaaS billing</li>
-          <li>Developed and launched the initial Darwinbox marketing website</li>
-        </ul>
-        <span class="quest-xp">+500 XP EARNED</span>
+
+      <div class="quest-item" onclick="toggleQuest(this)">
+        <div class="quest-header">
+          <div class="quest-icon">📊</div>
+          <div class="quest-meta">
+            <div class="quest-company">FACTSET RESEARCH SYSTEMS</div>
+            <div class="quest-role">Software Engineer III · Hyderabad</div>
+          </div>
+          <div class="quest-date">APR 2021<br>JUN 2022</div>
+          <div class="quest-status status-done">✓ DONE</div>
+        </div>
+        <div class="quest-body">
+          <ul class="quest-bullets">
+            <li>Rebuilt application UIs to W3C accessibility standards</li>
+            <li>Delivered financial charts in Vue + ChartIQ with live data streams for thousands of clients</li>
+            <li>Implemented technical studies for charting &amp; advanced financial analysis</li>
+          </ul>
+          <span class="quest-xp">+900 XP EARNED</span>
+        </div>
       </div>
-    </div>
 
-  </div>
-</section>
-
-<!-- TREASURE VAULT (Projects) -->
-<section id="treasures" class="section" style="color:var(--accent2)">
-  <div class="section-header">
-    <div class="section-icon" style="color:var(--accent2)">🗝</div>
-    <div class="section-title-wrap">
-      <div class="section-pretitle">// CHAPTER 02</div>
-      <div class="section-title" style="color:var(--accent2)">TREASURE VAULT</div>
-    </div>
-    <div class="section-rule" style="background:linear-gradient(90deg,var(--accent2),transparent)"></div>
-  </div>
-
-  <div class="chest-grid">
-
-    <div class="chest chest-c1" onclick="openChest('ownhook')">
-      <div class="chest-lid"></div>
-      <div class="chest-corner tl"></div><div class="chest-corner tr"></div>
-      <div class="chest-corner bl"></div><div class="chest-corner br"></div>
-      <div class="chest-icon-wrap">🪝</div>
-      <div class="chest-name">OWNHOOK</div>
-      <div class="chest-type">DEVELOPER TOOL · SAAS</div>
-      <div class="chest-desc">All-in-one webhook testing platform. Create unlimited personal endpoints, inspect payloads in real-time, forward hooks, define custom responders and mock entire APIs. No restrictions.</div>
-      <div class="chest-tags">
-        <span class="chest-tag">WEBSOCKETS</span>
-        <span class="chest-tag">MOCK API</span>
-        <span class="chest-tag">REAL-TIME</span>
-        <span class="chest-tag">NODE.JS</span>
+      <div class="quest-item" onclick="toggleQuest(this)">
+        <div class="quest-header">
+          <div class="quest-icon">☁️</div>
+          <div class="quest-meta">
+            <div class="quest-company">ACTIFIO (GOOGLE CLOUD)</div>
+            <div class="quest-role">Lead Software Engineer · Hyderabad</div>
+          </div>
+          <div class="quest-date">JUN 2019<br>APR 2021</div>
+          <div class="quest-status status-done">✓ DONE</div>
+        </div>
+        <div class="quest-body">
+          <ul class="quest-bullets">
+            <li>Built reusable lazy-load data grid with search, sort &amp; multi-select — adopted app-wide</li>
+            <li>On-demand backup for Generic &amp; SAP Apps — now live on Google Cloud Backup &amp; DR</li>
+          </ul>
+          <span class="quest-xp">+1200 XP EARNED</span>
+        </div>
       </div>
-      <button class="chest-action">▶ OPEN CHEST</button>
-      <div class="chest-date">2025 — APR 2026</div>
-    </div>
 
-    <div class="chest chest-c3" onclick="openChest('meshcall')">
-      <div class="chest-lid"></div>
-      <div class="chest-corner tl"></div><div class="chest-corner tr"></div>
-      <div class="chest-corner bl"></div><div class="chest-corner br"></div>
-      <div class="chest-icon-wrap">📡</div>
-      <div class="chest-name">MESHCALL</div>
-      <div class="chest-type">P2P · WEBRTC APP</div>
-      <div class="chest-desc">Calling &amp; messaging for congested environments — concerts, crowd gatherings, weak signal areas. Peers connect directly via WebRTC mesh topology. No internet infrastructure needed.</div>
-      <div class="chest-tags">
-        <span class="chest-tag">WEBRTC</span>
-        <span class="chest-tag">P2P MESH</span>
-        <span class="chest-tag">OFFLINE-FIRST</span>
+      <div class="quest-item" onclick="toggleQuest(this)">
+        <div class="quest-header">
+          <div class="quest-icon">🏦</div>
+          <div class="quest-meta">
+            <div class="quest-company">TCS · ICICI BANK</div>
+            <div class="quest-role">Systems Engineer · Hyderabad</div>
+          </div>
+          <div class="quest-date">JUL 2017<br>JUN 2019</div>
+          <div class="quest-status status-done">✓ DONE</div>
+        </div>
+        <div class="quest-body">
+          <ul class="quest-bullets">
+            <li>Developed UPI &amp; UPI 2.0 (Quickpay by ICICI) alongside NPCI</li>
+            <li>Implemented Video KYC &amp; Quick Remittance on Money2India Europe</li>
+            <li>Introduced offline-first mode for RIBG field app via SQLite sync</li>
+          </ul>
+          <span class="quest-xp">+1200 XP EARNED</span>
+        </div>
       </div>
-      <button class="chest-action">▶ OPEN CHEST</button>
-      <div class="chest-date">2024 — JUN 2025</div>
-    </div>
 
-    <div class="chest chest-c2" onclick="openChest('biolinks')">
-      <div class="chest-lid"></div>
-      <div class="chest-corner tl"></div><div class="chest-corner tr"></div>
-      <div class="chest-corner bl"></div><div class="chest-corner br"></div>
-      <div class="chest-icon-wrap">🔗</div>
-      <div class="chest-name">BIOLINKS</div>
-      <div class="chest-type">OPEN SOURCE · LINK PLATFORM</div>
-      <div class="chest-desc">Full-featured open-source Linktree alternative with full UI customization — glassmorphism, neumorphism and pop themes. Live Spotify &amp; YouTube embeds with stats, social media integrations.</div>
-      <div class="chest-tags">
-        <span class="chest-tag">OPEN SOURCE</span>
-        <span class="chest-tag">SPOTIFY API</span>
-        <span class="chest-tag">YOUTUBE API</span>
-        <span class="chest-tag">CSS THEMES</span>
+      <div class="quest-item" onclick="toggleQuest(this)">
+        <div class="quest-header">
+          <div class="quest-icon">🌱</div>
+          <div class="quest-meta">
+            <div class="quest-company">DARWINBOX</div>
+            <div class="quest-role">Frontend Intern · Hyderabad</div>
+          </div>
+          <div class="quest-date">AUG 2016<br>JAN 2017</div>
+          <div class="quest-status status-done">✓ DONE</div>
+        </div>
+        <div class="quest-body">
+          <ul class="quest-bullets">
+            <li>Built auto-invoicing module for pay-as-you-go SaaS billing</li>
+            <li>Developed and launched the initial Darwinbox marketing website</li>
+          </ul>
+          <span class="quest-xp">+500 XP EARNED</span>
+        </div>
       </div>
-      <button class="chest-action">▶ OPEN CHEST</button>
-      <div class="chest-date">AUG 2020</div>
-    </div>
 
-    <div class="chest chest-c4" onclick="openChest('kakeibo')">
-      <div class="chest-lid"></div>
-      <div class="chest-corner tl"></div><div class="chest-corner tr"></div>
-      <div class="chest-corner bl"></div><div class="chest-corner br"></div>
-      <div class="chest-icon-wrap">💴</div>
-      <div class="chest-name">KAKEIBO MM</div>
-      <div class="chest-type">FINTECH · EXPENSE MANAGER</div>
-      <div class="chest-desc">Expense manager inspired by the Japanese kakeibo budgeting philosophy. Smart auto-reminders for recurring bills based on your spending history and patterns.</div>
-      <div class="chest-tags">
-        <span class="chest-tag">REACT</span>
-        <span class="chest-tag">NODE.JS</span>
-        <span class="chest-tag">BUDGETING</span>
+    </div>
+  </section>
+
+  <!-- TREASURE VAULT (Projects) -->
+  <section id="treasures" class="section" style="color:var(--accent2)">
+    <div class="section-header">
+      <div class="section-icon" style="color:var(--accent2)">🗝</div>
+      <div class="section-title-wrap">
+        <div class="section-pretitle">// CHAPTER 02</div>
+        <div class="section-title" style="color:var(--accent2)">TREASURE VAULT</div>
       </div>
-      <button class="chest-action" style="color:#1a1a00">▶ OPEN CHEST</button>
-      <div class="chest-date">AUG 2021 — FEB 2022</div>
+      <div class="section-rule" style="background:linear-gradient(90deg,var(--accent2),transparent)"></div>
     </div>
 
-  </div>
-</section>
+    <div class="chest-grid">
 
-<!-- SKILL TREE / INVENTORY -->
-<section id="inventory" class="section" style="color:var(--accent3)">
-  <div class="section-header">
-    <div class="section-icon" style="color:var(--accent3)">⚗</div>
-    <div class="section-title-wrap">
-      <div class="section-pretitle">// CHAPTER 03</div>
-      <div class="section-title" style="color:var(--accent3)">SKILL TREE</div>
+      <div class="chest chest-c1" onclick="openChest('ownhook')">
+        <div class="chest-lid"></div>
+        <div class="chest-corner tl"></div>
+        <div class="chest-corner tr"></div>
+        <div class="chest-corner bl"></div>
+        <div class="chest-corner br"></div>
+        <div class="chest-icon-wrap">🪝</div>
+        <div class="chest-name">OWNHOOK</div>
+        <div class="chest-type">DEVELOPER TOOL · SAAS</div>
+        <div class="chest-desc">All-in-one webhook testing platform. Create unlimited personal endpoints, inspect
+          payloads in real-time, forward hooks, define custom responders and mock entire APIs. No restrictions.</div>
+        <div class="chest-tags">
+          <span class="chest-tag">WEBSOCKETS</span>
+          <span class="chest-tag">MOCK API</span>
+          <span class="chest-tag">REAL-TIME</span>
+          <span class="chest-tag">NODE.JS</span>
+        </div>
+        <button class="chest-action">▶ OPEN CHEST</button>
+        <div class="chest-date">2025 — APR 2026</div>
+      </div>
+
+      <div class="chest chest-c3" onclick="openChest('meshcall')">
+        <div class="chest-lid"></div>
+        <div class="chest-corner tl"></div>
+        <div class="chest-corner tr"></div>
+        <div class="chest-corner bl"></div>
+        <div class="chest-corner br"></div>
+        <div class="chest-icon-wrap">📡</div>
+        <div class="chest-name">MESHCALL</div>
+        <div class="chest-type">P2P · WEBRTC APP</div>
+        <div class="chest-desc">Calling &amp; messaging for congested environments — concerts, crowd gatherings, weak
+          signal areas. Peers connect directly via WebRTC mesh topology. No internet infrastructure needed.</div>
+        <div class="chest-tags">
+          <span class="chest-tag">WEBRTC</span>
+          <span class="chest-tag">P2P MESH</span>
+          <span class="chest-tag">OFFLINE-FIRST</span>
+        </div>
+        <button class="chest-action">▶ OPEN CHEST</button>
+        <div class="chest-date">2024 — JUN 2025</div>
+      </div>
+
+      <div class="chest chest-c2" onclick="openChest('biolinks')">
+        <div class="chest-lid"></div>
+        <div class="chest-corner tl"></div>
+        <div class="chest-corner tr"></div>
+        <div class="chest-corner bl"></div>
+        <div class="chest-corner br"></div>
+        <div class="chest-icon-wrap">🔗</div>
+        <div class="chest-name">BIOLINKS</div>
+        <div class="chest-type">OPEN SOURCE · LINK PLATFORM</div>
+        <div class="chest-desc">Full-featured open-source Linktree alternative with full UI customization —
+          glassmorphism, neumorphism and pop themes. Live Spotify &amp; YouTube embeds with stats, social media
+          integrations.</div>
+        <div class="chest-tags">
+          <span class="chest-tag">OPEN SOURCE</span>
+          <span class="chest-tag">SPOTIFY API</span>
+          <span class="chest-tag">YOUTUBE API</span>
+          <span class="chest-tag">CSS THEMES</span>
+        </div>
+        <button class="chest-action">▶ OPEN CHEST</button>
+        <div class="chest-date">AUG 2020</div>
+      </div>
+
+      <div class="chest chest-c4" onclick="openChest('kakeibo')">
+        <div class="chest-lid"></div>
+        <div class="chest-corner tl"></div>
+        <div class="chest-corner tr"></div>
+        <div class="chest-corner bl"></div>
+        <div class="chest-corner br"></div>
+        <div class="chest-icon-wrap">💴</div>
+        <div class="chest-name">KAKEIBO MM</div>
+        <div class="chest-type">FINTECH · EXPENSE MANAGER</div>
+        <div class="chest-desc">Expense manager inspired by the Japanese kakeibo budgeting philosophy. Smart
+          auto-reminders for recurring bills based on your spending history and patterns.</div>
+        <div class="chest-tags">
+          <span class="chest-tag">REACT</span>
+          <span class="chest-tag">NODE.JS</span>
+          <span class="chest-tag">BUDGETING</span>
+        </div>
+        <button class="chest-action" style="color:#1a1a00">▶ OPEN CHEST</button>
+        <div class="chest-date">AUG 2021 — FEB 2022</div>
+      </div>
+
     </div>
-    <div class="section-rule" style="background:linear-gradient(90deg,var(--accent3),transparent)"></div>
-  </div>
+  </section>
 
-  <div class="inv-section-title" style="color:var(--accent4)">⭐ LEGENDARY</div>
-  <div class="inv-grid">
-    <div class="inv-slot legendary" onclick="gainXP()"><div class="inv-level">MAX</div><div class="inv-icon">⚡</div><div class="inv-name">JAVA SCRIPT</div></div>
-    <div class="inv-slot legendary" onclick="gainXP()"><div class="inv-level">MAX</div><div class="inv-icon">🔷</div><div class="inv-name">TYPE SCRIPT</div></div>
-    <div class="inv-slot legendary" onclick="gainXP()"><div class="inv-level">MAX</div><div class="inv-icon">⚛</div><div class="inv-name">REACT</div></div>
-    <div class="inv-slot legendary" onclick="gainXP()"><div class="inv-level">MAX</div><div class="inv-icon">💚</div><div class="inv-name">NODE.JS</div></div>
-    <div class="inv-slot legendary" onclick="gainXP()"><div class="inv-level">MAX</div><div class="inv-icon">🟢</div><div class="inv-name">VUE / NUXT</div></div>
-  </div>
-
-  <div class="inv-section-title" style="color:var(--accent3)">🔮 EPIC</div>
-  <div class="inv-grid">
-    <div class="inv-slot epic" onclick="gainXP()"><div class="inv-level">85</div><div class="inv-icon">🌐</div><div class="inv-name">WEBRTC</div></div>
-    <div class="inv-slot epic" onclick="gainXP()"><div class="inv-level">90</div><div class="inv-icon">🔌</div><div class="inv-name">WEB SOCKETS</div></div>
-    <div class="inv-slot epic" onclick="gainXP()"><div class="inv-level">88</div><div class="inv-icon">📱</div><div class="inv-name">MOBILE SDK</div></div>
-    <div class="inv-slot epic" onclick="gainXP()"><div class="inv-level">85</div><div class="inv-icon">💬</div><div class="inv-name">WHATSAPP API</div></div>
-    <div class="inv-slot epic" onclick="gainXP()"><div class="inv-level">82</div><div class="inv-icon">📡</div><div class="inv-name">RCS API</div></div>
-    <div class="inv-slot epic" onclick="gainXP()"><div class="inv-level">80</div><div class="inv-icon">🐉</div><div class="inv-name">ANGULAR</div></div>
-  </div>
-
-  <div class="inv-section-title" style="color:var(--blue)">💎 RARE</div>
-  <div class="inv-grid">
-    <div class="inv-slot rare" onclick="gainXP()"><div class="inv-level">75</div><div class="inv-icon">🍃</div><div class="inv-name">MONGO DB</div></div>
-    <div class="inv-slot rare" onclick="gainXP()"><div class="inv-level">72</div><div class="inv-icon">🐘</div><div class="inv-name">POSTGRE SQL</div></div>
-    <div class="inv-slot rare" onclick="gainXP()"><div class="inv-level">70</div><div class="inv-icon">🐬</div><div class="inv-name">MY SQL</div></div>
-    <div class="inv-slot rare" onclick="gainXP()"><div class="inv-level">74</div><div class="inv-icon">🐍</div><div class="inv-name">PYTHON</div></div>
-    <div class="inv-slot rare" onclick="gainXP()"><div class="inv-level">68</div><div class="inv-icon">💨</div><div class="inv-name">TAILWIND</div></div>
-    <div class="inv-slot rare" onclick="gainXP()"><div class="inv-level">65</div><div class="inv-icon">🎨</div><div class="inv-name">CHART IQ</div></div>
-    <div class="inv-slot rare" onclick="gainXP()"><div class="inv-level">70</div><div class="inv-icon">🔧</div><div class="inv-name">EXPRESS</div></div>
-    <div class="inv-slot rare" onclick="gainXP()"><div class="inv-level">60</div><div class="inv-icon">🤖</div><div class="inv-name">LLM / RAG</div></div>
-  </div>
-
-  <div class="inv-section-title">⚔ COMMON</div>
-  <div class="inv-grid">
-    <div class="inv-slot" onclick="gainXP()"><div class="inv-icon">🔀</div><div class="inv-name">GIT</div></div>
-    <div class="inv-slot" onclick="gainXP()"><div class="inv-icon">📬</div><div class="inv-name">POSTMAN</div></div>
-    <div class="inv-slot" onclick="gainXP()"><div class="inv-icon">📋</div><div class="inv-name">JIRA</div></div>
-    <div class="inv-slot" onclick="gainXP()"><div class="inv-icon">💻</div><div class="inv-name">BASH</div></div>
-    <div class="inv-slot" onclick="gainXP()"><div class="inv-icon">☕</div><div class="inv-name">JAVA</div></div>
-    <div class="inv-slot" onclick="gainXP()"><div class="inv-icon">🐘</div><div class="inv-name">PHP</div></div>
-  </div>
-</section>
-
-<!-- GUILD HALL -->
-<section id="guild" style="position:relative;z-index:10">
-  <div class="guild-title">⚔ GUILD HALL</div>
-  <div class="guild-sub">// SEND A RAVEN · CONNECT ·</div>
-  <div class="guild-links">
-    <a href="mailto:saivinod440@gmail.com" class="guild-link gl-email">📨 SAIVINOD440@GMAIL.COM</a>
-    <a href="https://github.com/KSaiVinod" target="_blank" class="guild-link gl-github">⚙ GITHUB / KSAIVINOD</a>
-    <a href="https://linkedin.com/in/saivinodk" target="_blank" class="guild-link gl-linkedin">🛡 LINKEDIN / SAIVINODK</a>
-  </div>
-</section>
-
-<footer>© 2026 SAI VINOD KONAKANCHI · ALL RIGHTS RESERVED</footer>
-
-<!-- MODALS -->
-<div class="modal-backdrop" id="modal" onclick="closeModal(event)">
-  <div class="modal-box" id="modal-box">
-    <div class="modal-bar" id="modal-bar"></div>
-    <div class="modal-content">
-      <button class="modal-close" onclick="closeModal()">✕ CLOSE</button>
-      <div class="modal-pretitle" id="modal-pre"></div>
-      <div class="modal-title" id="modal-title"></div>
-      <div class="modal-subtitle" id="modal-sub"></div>
-      <div class="modal-body" id="modal-body"></div>
-      <div class="modal-tech-title">// TECH STACK</div>
-      <div class="modal-tags" id="modal-tags"></div>
+  <!-- SKILL TREE / INVENTORY -->
+  <section id="inventory" class="section" style="color:var(--accent3)">
+    <div class="section-header">
+      <div class="section-icon" style="color:var(--accent3)">⚗</div>
+      <div class="section-title-wrap">
+        <div class="section-pretitle">// CHAPTER 03</div>
+        <div class="section-title" style="color:var(--accent3)">SKILL TREE</div>
+      </div>
+      <div class="section-rule" style="background:linear-gradient(90deg,var(--accent3),transparent)"></div>
     </div>
-    <div class="modal-footer">
-      <div class="modal-stat">STATUS: <span id="modal-status"></span></div>
-      <div class="modal-stat">XP REWARD: <span id="modal-xp"></span></div>
+
+    <div class="inv-section-title" style="color:var(--accent4)">⭐ LEGENDARY</div>
+    <div class="inv-grid">
+  <div class="inv-slot legendary" onclick="gainXP()">
+    <div class="inv-level">MAX</div>
+    <div class="inv-icon"><img src="https://cdn.simpleicons.org/javascript/F7DF1E" alt="JavaScript"></div>
+    <div class="inv-name">JAVA SCRIPT</div>
+  </div>
+
+  <div class="inv-slot legendary" onclick="gainXP()">
+    <div class="inv-level">MAX</div>
+    <div class="inv-icon"><img src="https://cdn.simpleicons.org/typescript/3178C6" alt="TypeScript"></div>
+    <div class="inv-name">TYPE SCRIPT</div>
+  </div>
+
+  <div class="inv-slot legendary" onclick="gainXP()">
+    <div class="inv-level">MAX</div>
+    <div class="inv-icon"><img src="https://cdn.simpleicons.org/react/61DAFB" alt="React"></div>
+    <div class="inv-name">REACT</div>
+  </div>
+
+  <div class="inv-slot legendary" onclick="gainXP()">
+    <div class="inv-level">MAX</div>
+    <div class="inv-icon"><img src="https://cdn.simpleicons.org/nodedotjs/339933" alt="Node.js"></div>
+    <div class="inv-name">NODE.JS</div>
+  </div>
+
+  <div class="inv-slot legendary" onclick="gainXP()">
+    <div class="inv-level">MAX</div>
+    <div class="inv-icon icon-dual">
+      <img src="https://cdn.simpleicons.org/vuedotjs/4FC08D" alt="Vue">
+      <img src="https://cdn.simpleicons.org/nuxt/00DC82" alt="Nuxt">
     </div>
+    <div class="inv-name">VUE / NUXT</div>
   </div>
 </div>
 
-<script>
-// Stars
-(function(){
-  const c=document.getElementById('stars');
-  const ctx=c.getContext('2d');
-  c.width=window.innerWidth;c.height=window.innerHeight;
-  const stars=[];
-  for(let i=0;i<200;i++){
-    stars.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.5,a:Math.random(),da:Math.random()*0.005+0.001});
-  }
-  function draw(){
-    ctx.clearRect(0,0,c.width,c.height);
-    stars.forEach(s=>{
-      s.a+=s.da;if(s.a>1||s.a<0)s.da*=-1;
-      ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-      ctx.fillStyle=`rgba(0,245,196,${s.a*0.6})`;ctx.fill();
+<div class="inv-section-title" style="color:var(--accent3)">🔮 EPIC</div>
+<div class="inv-grid">
+  <div class="inv-slot epic" onclick="gainXP()">
+    <div class="inv-level">85</div>
+    <div class="inv-icon"><img src="https://cdn.simpleicons.org/webrtc/FFFFFF" alt="WebRTC"></div>
+    <div class="inv-name">WEBRTC</div>
+  </div>
+
+  <div class="inv-slot epic" onclick="gainXP()">
+    <div class="inv-level">90</div>
+    <div class="inv-icon"><img src="https://cdn.simpleicons.org/socketdotio/FFFFFF" alt="Web Sockets"></div>
+    <div class="inv-name">WEB SOCKETS</div>
+  </div>
+
+  <div class="inv-slot epic" onclick="gainXP()">
+    <div class="inv-level">88</div>
+    <div class="inv-icon icon-dual">
+      <img src="https://cdn.simpleicons.org/android/3DDC84" alt="Android">
+      <img src="https://cdn.simpleicons.org/apple/FFFFFF" alt="iOS">
+    </div>
+    <div class="inv-name">MOBILE SDK</div>
+  </div>
+
+  <div class="inv-slot epic" onclick="gainXP()">
+    <div class="inv-level">85</div>
+    <div class="inv-icon"><img src="https://cdn.simpleicons.org/whatsapp/25D366" alt="WhatsApp API"></div>
+    <div class="inv-name">WHATSAPP API</div>
+  </div>
+
+  <div class="inv-slot epic" onclick="gainXP()">
+    <div class="inv-level">82</div>
+    <div class="inv-icon">
+      <svg viewBox="0 0 64 64" aria-label="RCS API" role="img">
+        <rect x="10" y="14" width="30" height="22" rx="6" fill="#4488ff"/>
+        <path d="M18 36 L18 46 L28 38" fill="#4488ff"/>
+        <rect x="28" y="28" width="26" height="20" rx="6" fill="#00f5c4"/>
+        <path d="M46 48 L46 56 L38 48" fill="#00f5c4"/>
+      </svg>
+    </div>
+    <div class="inv-name">RCS API</div>
+  </div>
+
+  <div class="inv-slot epic" onclick="gainXP()">
+    <div class="inv-level">80</div>
+    <div class="inv-icon"><img src="https://cdn.simpleicons.org/angular/DD0031" alt="Angular"></div>
+    <div class="inv-name">ANGULAR</div>
+  </div>
+</div>
+
+<div class="inv-section-title" style="color:var(--blue)">💎 RARE</div>
+<div class="inv-grid">
+  <div class="inv-slot rare" onclick="gainXP()">
+    <div class="inv-level">75</div>
+    <div class="inv-icon"><img src="https://cdn.simpleicons.org/mongodb/47A248" alt="MongoDB"></div>
+    <div class="inv-name">MONGO DB</div>
+  </div>
+
+  <div class="inv-slot rare" onclick="gainXP()">
+    <div class="inv-level">72</div>
+    <div class="inv-icon"><img src="https://cdn.simpleicons.org/postgresql/4169E1" alt="PostgreSQL"></div>
+    <div class="inv-name">POSTGRE SQL</div>
+  </div>
+
+  <div class="inv-slot rare" onclick="gainXP()">
+    <div class="inv-level">70</div>
+    <div class="inv-icon"><img src="https://cdn.simpleicons.org/mysql/4479A1" alt="MySQL"></div>
+    <div class="inv-name">MY SQL</div>
+  </div>
+
+  <div class="inv-slot rare" onclick="gainXP()">
+    <div class="inv-level">74</div>
+    <div class="inv-icon"><img src="https://cdn.simpleicons.org/python/3776AB" alt="Python"></div>
+    <div class="inv-name">PYTHON</div>
+  </div>
+
+  <div class="inv-slot rare" onclick="gainXP()">
+    <div class="inv-level">68</div>
+    <div class="inv-icon"><img src="https://cdn.simpleicons.org/tailwindcss/06B6D4" alt="Tailwind CSS"></div>
+    <div class="inv-name">TAILWIND</div>
+  </div>
+
+  <div class="inv-slot rare" onclick="gainXP()">
+    <div class="inv-level">65</div>
+    <div class="inv-icon inv-text-logo">CQ</div>
+    <div class="inv-name">CHART IQ</div>
+  </div>
+
+  <div class="inv-slot rare" onclick="gainXP()">
+    <div class="inv-level">70</div>
+    <div class="inv-icon"><img src="https://cdn.simpleicons.org/express/FFFFFF" alt="Express"></div>
+    <div class="inv-name">EXPRESS</div>
+  </div>
+
+  <div class="inv-slot rare" onclick="gainXP()">
+    <div class="inv-level">60</div>
+    <div class="inv-icon">
+      <svg viewBox="0 0 64 64" aria-label="LLM / RAG" role="img">
+        <circle cx="22" cy="20" r="6" fill="#a855f7"/>
+        <circle cx="42" cy="20" r="6" fill="#00f5c4"/>
+        <circle cx="22" cy="42" r="6" fill="#4488ff"/>
+        <circle cx="42" cy="42" r="6" fill="#ffd700"/>
+        <path d="M22 20 L42 20 M22 20 L22 42 M42 20 L42 42 M22 42 L42 42 M22 20 L42 42 M42 20 L22 42"
+              stroke="#e0e0ff" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="inv-name">LLM / RAG</div>
+  </div>
+</div>
+
+<div class="inv-section-title">⚔ COMMON</div>
+<div class="inv-grid">
+  <div class="inv-slot" onclick="gainXP()">
+    <div class="inv-icon"><img src="https://cdn.simpleicons.org/git/F05032" alt="Git"></div>
+    <div class="inv-name">GIT</div>
+  </div>
+
+  <div class="inv-slot" onclick="gainXP()">
+    <div class="inv-icon"><img src="https://cdn.simpleicons.org/postman/FF6C37" alt="Postman"></div>
+    <div class="inv-name">POSTMAN</div>
+  </div>
+
+  <div class="inv-slot" onclick="gainXP()">
+    <div class="inv-icon"><img src="https://cdn.simpleicons.org/jira/0052CC" alt="Jira"></div>
+    <div class="inv-name">JIRA</div>
+  </div>
+
+  <div class="inv-slot" onclick="gainXP()">
+    <div class="inv-icon"><img src="https://cdn.simpleicons.org/gnubash/4EAA25" alt="Bash"></div>
+    <div class="inv-name">BASH</div>
+  </div>
+
+  <div class="inv-slot" onclick="gainXP()">
+    <div class="inv-icon"><img src="https://cdn.simpleicons.org/openjdk/ED8B00" alt="Java"></div>
+    <div class="inv-name">JAVA</div>
+  </div>
+
+  <div class="inv-slot" onclick="gainXP()">
+    <div class="inv-icon"><img src="https://cdn.simpleicons.org/php/777BB4" alt="PHP"></div>
+    <div class="inv-name">PHP</div>
+  </div>
+</div>
+  </section>
+
+  <!-- GUILD HALL -->
+  <section id="guild" style="position:relative;z-index:10">
+    <div class="guild-title">⚔ GUILD HALL</div>
+    <div class="guild-sub">// SEND A RAVEN · CONNECT ·</div>
+    <div class="guild-links">
+      <a href="mailto:saivinod440@gmail.com" class="guild-link gl-email">📨 SAIVINOD440@GMAIL.COM</a>
+      <a href="https://github.com/KSaiVinod" target="_blank" class="guild-link gl-github">⚙ GITHUB / KSAIVINOD</a>
+      <a href="https://linkedin.com/in/saivinodk" target="_blank" class="guild-link gl-linkedin">🛡 LINKEDIN /
+        SAIVINODK</a>
+    </div>
+  </section>
+
+  <footer>© 2026 SAI VINOD KONAKANCHI · ALL RIGHTS RESERVED</footer>
+
+  <!-- MODALS -->
+  <div class="modal-backdrop" id="modal" onclick="closeModal(event)">
+    <div class="modal-box" id="modal-box">
+      <div class="modal-bar" id="modal-bar"></div>
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeModal()">✕ CLOSE</button>
+        <div class="modal-pretitle" id="modal-pre"></div>
+        <div class="modal-title" id="modal-title"></div>
+        <div class="modal-subtitle" id="modal-sub"></div>
+        <div class="modal-body" id="modal-body"></div>
+        <div class="modal-tech-title">// TECH STACK</div>
+        <div class="modal-tags" id="modal-tags"></div>
+      </div>
+      <div class="modal-footer">
+        <div class="modal-stat">STATUS: <span id="modal-status"></span></div>
+        <div class="modal-stat">XP REWARD: <span id="modal-xp"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Stars
+    (function () {
+      const c = document.getElementById('stars');
+      const ctx = c.getContext('2d');
+      c.width = window.innerWidth; c.height = window.innerHeight;
+      const stars = [];
+      for (let i = 0; i < 200; i++) {
+        stars.push({ x: Math.random() * c.width, y: Math.random() * c.height, r: Math.random() * 1.5, a: Math.random(), da: Math.random() * 0.005 + 0.001 });
+      }
+      function draw() {
+        ctx.clearRect(0, 0, c.width, c.height);
+        stars.forEach(s => {
+          s.a += s.da; if (s.a > 1 || s.a < 0) s.da *= -1;
+          ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(0,245,196,${s.a * 0.6})`; ctx.fill();
+        });
+        requestAnimationFrame(draw);
+      }
+      draw();
+      window.addEventListener('resize', () => { c.width = window.innerWidth; c.height = window.innerHeight; });
+    })();
+
+    // Cursor
+    const cur = document.getElementById('cursor');
+    document.addEventListener('mousemove', e => {
+      cur.style.left = e.clientX - 4 + 'px';
+      cur.style.top = e.clientY - 4 + 'px';
     });
-    requestAnimationFrame(draw);
-  }
-  draw();
-  window.addEventListener('resize',()=>{c.width=window.innerWidth;c.height=window.innerHeight;});
-})();
 
-// Cursor
-const cur=document.getElementById('cursor');
-document.addEventListener('mousemove',e=>{
-  cur.style.left=e.clientX-4+'px';
-  cur.style.top=e.clientY-4+'px';
-});
+    // Particles on click
+    document.addEventListener('click', e => {
+      for (let i = 0; i < 6; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = (e.clientX + Math.random() * 20 - 10) + 'px';
+        p.style.top = e.clientY + 'px';
+        p.style.animationDelay = Math.random() * 0.3 + 's';
+        p.style.background = ['#00f5c4', '#ff6b35', '#a855f7', '#ffd700'][Math.floor(Math.random() * 4)];
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 4000);
+      }
+    });
 
-// Particles on click
-document.addEventListener('click',e=>{
-  for(let i=0;i<6;i++){
-    const p=document.createElement('div');
-    p.className='particle';
-    p.style.left=(e.clientX+Math.random()*20-10)+'px';
-    p.style.top=e.clientY+'px';
-    p.style.animationDelay=Math.random()*0.3+'s';
-    p.style.background=['#00f5c4','#ff6b35','#a855f7','#ffd700'][Math.floor(Math.random()*4)];
-    document.body.appendChild(p);
-    setTimeout(()=>p.remove(),4000);
-  }
-});
+    // Toggle quest
+    function toggleQuest(el) {
+      el.classList.toggle('open');
+      if (el.classList.contains('open')) showToast('QUEST DETAILS UNLOCKED!');
+    }
 
-// Toggle quest
-function toggleQuest(el){
-  el.classList.toggle('open');
-  if(el.classList.contains('open')) showToast('QUEST DETAILS UNLOCKED!');
-}
+    // XP system
+    let xp = 6500; let lvl = 7; let clickCount = 0;
+    function gainXP() {
+      clickCount++;
+      const gain = Math.floor(Math.random() * 30) + 10;
+      xp += gain;
+      showToast('+ ' + gain + ' XP GAINED!');
+      const xpFill = document.querySelector('.xp-fill');
+      const pct = Math.min(100, (xp % 1000) / 10);
+      xpFill.style.width = pct + '%';
+      document.querySelector('.stat-val').textContent = xp;
+      if (clickCount % 8 === 0) levelUp();
+    }
+    function levelUp() {
+      lvl++;
+      const lu = document.getElementById('lvlup');
+      lu.style.display = 'block';
+      lu.textContent = 'LEVEL ' + (lvl - 1) + ' → ' + lvl + '!';
+      setTimeout(() => { lu.style.display = 'none' }, 1500);
+      document.querySelector('.player-class').textContent = 'FULLSTACK MAGE · LVL ' + lvl;
+    }
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2000);
+    }
 
-// XP system
-let xp=6500;let lvl=7;let clickCount=0;
-function gainXP(){
-  clickCount++;
-  const gain=Math.floor(Math.random()*30)+10;
-  xp+=gain;
-  showToast('+ '+gain+' XP GAINED!');
-  const xpFill=document.querySelector('.xp-fill');
-  const pct=Math.min(100,(xp%1000)/10);
-  xpFill.style.width=pct+'%';
-  document.querySelector('.stat-val').textContent=xp;
-  if(clickCount%8===0) levelUp();
-}
-function levelUp(){
-  lvl++;
-  const lu=document.getElementById('lvlup');
-  lu.style.display='block';
-  lu.textContent='LEVEL '+(lvl-1)+' → '+lvl+'!';
-  setTimeout(()=>{lu.style.display='none'},1500);
-  document.querySelector('.player-class').textContent='FULLSTACK MAGE · LVL '+lvl;
-}
-function showToast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg;
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2000);
-}
+    // Chest modals
+    const chestData = {
+      ownhook: {
+        pre: '// LEGENDARY ITEM',
+        title: 'OWNHOOK',
+        sub: 'WEBHOOK TESTING PLATFORM · DEVELOPER TOOL',
+        color: '#00f5c4',
+        body: 'The all-in-one webhook testing and debugging platform. Create unlimited personal webhook endpoints instantly. Watch incoming payloads stream in real-time, forward webhooks to any destination, define custom response rules, and mock entire APIs — all without any account restrictions or rate limits. Built for developers who are tired of hitting walls on webhook.site.',
+        tags: ['WEBSOCKETS', 'REAL-TIME STREAMING', 'MOCK API ENGINE', 'CUSTOM RESPONDERS', 'HOOK FORWARDER', 'NODE.JS', 'EXPRESS', 'MONGODB'],
+        status: 'COMPLETED',
+        xp: '+800 XP'
+      },
+      meshcall: {
+        pre: '// EPIC ITEM',
+        title: 'MESHCALL',
+        sub: 'P2P CALLING & MESSAGING APP · WEBRTC',
+        color: '#a855f7',
+        body: 'A WebRTC-powered peer-to-peer calling and messaging application designed specifically for high-congestion environments — concerts, crowded markets, sports events, areas with weak or saturated network signals. Peers discover each other and connect directly via a mesh network topology, routing audio and messages without relying on any internet backbone. Built for me and my friends to stay connected when conventional apps fail.',
+        tags: ['WEBRTC', 'P2P MESH TOPOLOGY', 'OFFLINE-FIRST', 'SIGNALING SERVER', 'ICE/STUN/TURN', 'JAVASCRIPT', 'LOW-LATENCY AUDIO'],
+        status: 'COMPLETED',
+        xp: '+900 XP'
+      },
+      biolinks: {
+        pre: '// RARE ITEM · OPEN SOURCE',
+        title: 'BIOLINKS',
+        sub: 'OPEN SOURCE LINK PLATFORM · FULL CUSTOMIZATION',
+        color: '#ff6b35',
+        body: 'A full-featured open-source alternative to Linktree and bio.link — built with actual design ambition. Users get complete control over UI themes: glassmorphism, neumorphism, and vibrant pop aesthetics. Not just links — embed your live Spotify listening status, YouTube channel stats, and rich media from any social platform. Analytics track every click by device, OS, and location. Shut down in 2020 but the code lives on.',
+        tags: ['OPEN SOURCE', 'SPOTIFY API', 'YOUTUBE DATA API', 'GLASSMORPHISM', 'NEUMORPHISM', 'CSS THEMES', 'CLICK ANALYTICS', 'VUE.JS'],
+        status: 'ARCHIVED · 2020',
+        xp: '+600 XP'
+      },
+      kakeibo: {
+        pre: '// UNCOMMON ITEM',
+        title: 'KAKEIBO MM',
+        sub: 'EXPENSE MANAGER · JAPANESE BUDGETING',
+        color: '#ffd700',
+        body: 'An expense tracking app inspired by Kakeibo — the Japanese art of mindful money management. The philosophy is simple: write down what you earn, what you spend, and reflect. The app adds modern utility on top: intelligent auto-reminders for recurring bills, spending pattern analysis, and category-aware budget tracking built around the four Kakeibo pillars.',
+        tags: ['REACT', 'NODE.JS', 'EXPRESS', 'MONGODB', 'PUSH NOTIFICATIONS', 'RECURRING BILLING', 'BUDGETING LOGIC'],
+        status: 'COMPLETED · FEB 2022',
+        xp: '+500 XP'
+      }
+    };
 
-// Chest modals
-const chestData={
-  ownhook:{
-    pre:'// LEGENDARY ITEM',
-    title:'OWNHOOK',
-    sub:'WEBHOOK TESTING PLATFORM · DEVELOPER TOOL',
-    color:'#00f5c4',
-    body:'The all-in-one webhook testing and debugging platform. Create unlimited personal webhook endpoints instantly. Watch incoming payloads stream in real-time, forward webhooks to any destination, define custom response rules, and mock entire APIs — all without any account restrictions or rate limits. Built for developers who are tired of hitting walls on webhook.site.',
-    tags:['WEBSOCKETS','REAL-TIME STREAMING','MOCK API ENGINE','CUSTOM RESPONDERS','HOOK FORWARDER','NODE.JS','EXPRESS','MONGODB'],
-    status:'COMPLETED',
-    xp:'+800 XP'
-  },
-  meshcall:{
-    pre:'// EPIC ITEM',
-    title:'MESHCALL',
-    sub:'P2P CALLING & MESSAGING APP · WEBRTC',
-    color:'#a855f7',
-    body:'A WebRTC-powered peer-to-peer calling and messaging application designed specifically for high-congestion environments — concerts, crowded markets, sports events, areas with weak or saturated network signals. Peers discover each other and connect directly via a mesh network topology, routing audio and messages without relying on any internet backbone. Built for me and my friends to stay connected when conventional apps fail.',
-    tags:['WEBRTC','P2P MESH TOPOLOGY','OFFLINE-FIRST','SIGNALING SERVER','ICE/STUN/TURN','JAVASCRIPT','LOW-LATENCY AUDIO'],
-    status:'COMPLETED',
-    xp:'+900 XP'
-  },
-  biolinks:{
-    pre:'// RARE ITEM · OPEN SOURCE',
-    title:'BIOLINKS',
-    sub:'OPEN SOURCE LINK PLATFORM · FULL CUSTOMIZATION',
-    color:'#ff6b35',
-    body:'A full-featured open-source alternative to Linktree and bio.link — built with actual design ambition. Users get complete control over UI themes: glassmorphism, neumorphism, and vibrant pop aesthetics. Not just links — embed your live Spotify listening status, YouTube channel stats, and rich media from any social platform. Analytics track every click by device, OS, and location. Shut down in 2020 but the code lives on.',
-    tags:['OPEN SOURCE','SPOTIFY API','YOUTUBE DATA API','GLASSMORPHISM','NEUMORPHISM','CSS THEMES','CLICK ANALYTICS','VUE.JS'],
-    status:'ARCHIVED · 2020',
-    xp:'+600 XP'
-  },
-  kakeibo:{
-    pre:'// UNCOMMON ITEM',
-    title:'KAKEIBO MM',
-    sub:'EXPENSE MANAGER · JAPANESE BUDGETING',
-    color:'#ffd700',
-    body:'An expense tracking app inspired by Kakeibo — the Japanese art of mindful money management. The philosophy is simple: write down what you earn, what you spend, and reflect. The app adds modern utility on top: intelligent auto-reminders for recurring bills, spending pattern analysis, and category-aware budget tracking built around the four Kakeibo pillars.',
-    tags:['REACT','NODE.JS','EXPRESS','MONGODB','PUSH NOTIFICATIONS','RECURRING BILLING','BUDGETING LOGIC'],
-    status:'COMPLETED · FEB 2022',
-    xp:'+500 XP'
-  }
-};
-
-function openChest(id){
-  const d=chestData[id];
-  document.getElementById('modal-pre').textContent=d.pre;
-  document.getElementById('modal-title').textContent=d.title;
-  document.getElementById('modal-title').style.color=d.color;
-  document.getElementById('modal-sub').textContent=d.sub;
-  document.getElementById('modal-bar').style.background=d.color;
-  document.getElementById('modal-body').textContent=d.body;
-  document.getElementById('modal-status').textContent=d.status;
-  document.getElementById('modal-status').style.color=d.color;
-  document.getElementById('modal-xp').textContent=d.xp;
-  const tagsEl=document.getElementById('modal-tags');
-  tagsEl.innerHTML='';
-  d.tags.forEach(t=>{
-    const span=document.createElement('span');
-    span.className='modal-tag';
-    span.style.color=d.color;
-    span.style.borderColor=d.color+'44';
-    span.textContent=t;
-    tagsEl.appendChild(span);
-  });
-  document.getElementById('modal').classList.add('open');
-  gainXP();
-}
-function closeModal(e){
-  if(!e||e.target===document.getElementById('modal')||e.target.classList.contains('modal-close')){
-    document.getElementById('modal').classList.remove('open');
-  }
-}
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal({target:document.getElementById('modal')})});
-</script>
+    function openChest(id) {
+      const d = chestData[id];
+      document.getElementById('modal-pre').textContent = d.pre;
+      document.getElementById('modal-title').textContent = d.title;
+      document.getElementById('modal-title').style.color = d.color;
+      document.getElementById('modal-sub').textContent = d.sub;
+      document.getElementById('modal-bar').style.background = d.color;
+      document.getElementById('modal-body').textContent = d.body;
+      document.getElementById('modal-status').textContent = d.status;
+      document.getElementById('modal-status').style.color = d.color;
+      document.getElementById('modal-xp').textContent = d.xp;
+      const tagsEl = document.getElementById('modal-tags');
+      tagsEl.innerHTML = '';
+      d.tags.forEach(t => {
+        const span = document.createElement('span');
+        span.className = 'modal-tag';
+        span.style.color = d.color;
+        span.style.borderColor = d.color + '44';
+        span.textContent = t;
+        tagsEl.appendChild(span);
+      });
+      document.getElementById('modal').classList.add('open');
+      gainXP();
+    }
+    function closeModal(e) {
+      if (!e || e.target === document.getElementById('modal') || e.target.classList.contains('modal-close')) {
+        document.getElementById('modal').classList.remove('open');
+      }
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal({ target: document.getElementById('modal') }) });
+  </script>
 </body>
+
 </html>
