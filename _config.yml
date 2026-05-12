@@ -1,3 +1,8 @@
-theme: jekyll-theme-minimal
-title: Octocat's homepage
-description: Bookmark this to keep an eye on my project updates!
+theme: saivinod's-gamified-portfolio
+title: Sai Vinod | Full Stack Developer
+description: Welcome to my gamified portfolio! I'm Sai Vinod, a passionate full stack developer with expertise in JavaScript, React, Node.js, and more. Explore my projects, achievements, and skills as you level up through my coding journey. Let's connect and collaborate on exciting tech adventures!
+author: Sai Vinod
+social:
+  github: ksaivinod
+  linkedin: saivinodk
+  email: mail@saivinod.in

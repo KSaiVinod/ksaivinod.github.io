@@ -1,0 +1,45 @@
+# Don't deploy these files to Vercel
+
+# Documentation
+README.md
+GETTING_STARTED.md
+VERCEL_DEPLOY.md
+SUPABASE_SETUP.md
+DEPLOYMENT_CHECKLIST.md
+*.md
+
+# Version control
+.git/
+.gitignore
+.gitattributes
+
+# IDE & local
+.vscode/
+.idea/
+.DS_Store
+*.log
+
+# Local development
+data/
+.env.local
+.env.*.local
+.env
+
+# Node (Vercel installs dependencies)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Build & dist (not needed for serverless)
+dist/
+build/
+
+# Git files
+.git/
+.github/
+
+# Tests
+*.test.js
+tests/
+__tests__/
+coverage/
