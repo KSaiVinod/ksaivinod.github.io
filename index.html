@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sai Vinod · Portfolio</title>
+  <link id="app-favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230a0a12'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-size='34' fill='%23ffd700'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E">
   <link
     href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Rajdhani:wght@300;400;500;600;700&display=swap"
     rel="stylesheet">
@@ -317,6 +318,67 @@
       border-color: var(--accent);
       background: rgba(0, 245, 196, 0.08);
       box-shadow: 0 0 12px rgba(0, 245, 196, 0.2)
+    }
+
+    .mode-toggle {
+      margin-left: 8px;
+      border-color: var(--accent2);
+      color: var(--accent2);
+    }
+
+    .mode-toggle:hover {
+      color: #11131a;
+      border-color: var(--accent2);
+      background: rgba(255, 107, 53, 0.9);
+      box-shadow: 0 0 12px rgba(255, 107, 53, 0.35)
+    }
+
+    body.professional-mode {
+      --scanline: rgba(0, 0, 0, 0);
+      background: linear-gradient(180deg, #0f1220 0%, #131a2b 100%);
+      cursor: auto;
+    }
+
+    body.professional-mode,
+    body.professional-mode * {
+      cursor: auto !important;
+    }
+
+    body.professional-mode #cursor,
+    body.professional-mode .wand-trail,
+    body.professional-mode .pixel-deco,
+    body.professional-mode .scroll-hint,
+    body.professional-mode .section-icon,
+    body.professional-mode .quest-xp,
+    body.professional-mode #treasure-btn,
+    body.professional-mode .lvlup,
+    body.professional-mode #toast {
+      display: none !important;
+    }
+
+    body.professional-mode #stars {
+      opacity: 0.25;
+    }
+
+    body.professional-mode .particle {
+      display: none;
+    }
+
+    body.professional-mode .hud-stats {
+      display: none;
+    }
+
+    body.professional-mode .world-grid {
+      opacity: 0.2;
+    }
+
+    body.professional-mode .zone-btn {
+      border-radius: 8px;
+      border-style: solid;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 14px;
+      letter-spacing: 0.4px;
+      text-transform: none;
     }
 
     /* HERO / WORLD MAP */
@@ -658,6 +720,27 @@
 
     .quest-item.open .quest-body {
       display: block
+    }
+
+    .quest-item.quest-open-fx {
+      animation: quest-open-burst 0.45s ease-out;
+    }
+
+    @keyframes quest-open-burst {
+      0% {
+        box-shadow: 0 0 0 rgba(0, 245, 196, 0);
+        transform: translateX(0);
+      }
+
+      35% {
+        box-shadow: 0 0 26px rgba(0, 245, 196, 0.25);
+        transform: translateX(2px);
+      }
+
+      100% {
+        box-shadow: 0 0 0 rgba(0, 245, 196, 0);
+        transform: translateX(0);
+      }
     }
 
     .quest-bullets {
@@ -1037,7 +1120,50 @@
       max-width: 560px;
       width: 90%;
       position: relative;
+      overflow: hidden;
       animation: modal-in 0.2s ease-out;
+    }
+
+    .modal-box.popup-open-fx {
+      animation: popup-open-burst 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .modal-box.popup-open-fx::after {
+      content: '';
+      position: absolute;
+      inset: -35%;
+      background: radial-gradient(circle, rgba(255, 215, 0, 0.26) 0%, rgba(255, 215, 0, 0.12) 30%, rgba(255, 215, 0, 0) 70%);
+      pointer-events: none;
+      animation: popup-spark 0.5s ease-out;
+    }
+
+    @keyframes popup-open-burst {
+      0% {
+        transform: scale(0.9) translateY(20px);
+        filter: brightness(1);
+      }
+
+      55% {
+        transform: scale(1.02) translateY(-2px);
+        filter: brightness(1.16);
+      }
+
+      100% {
+        transform: scale(1) translateY(0);
+        filter: brightness(1);
+      }
+    }
+
+    @keyframes popup-spark {
+      0% {
+        transform: scale(0.35);
+        opacity: 0.9;
+      }
+
+      100% {
+        transform: scale(1.05);
+        opacity: 0;
+      }
     }
 
     @keyframes modal-in {
@@ -1530,7 +1656,7 @@
 
     /* ── Treasure HUD button ─────────────────────────────────────────── */
     #treasure-btn {
-      display: none;
+      display: inline-flex;
       align-items: center;
       gap: 6px;
       font-family: 'Press Start 2P';
@@ -1542,6 +1668,16 @@
       cursor: none;
       letter-spacing: 1px;
       animation: treasure-pulse 1.5s ease-in-out infinite;
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    #treasure-btn.unlocked {
+      visibility: visible;
+      opacity: 1;
+      pointer-events: auto;
     }
 
     @keyframes treasure-pulse {
@@ -1776,9 +1912,9 @@
       <div class="stat-bar-wrap">
         <span class="stat-label">HP</span>
         <div class="stat-bar">
-          <div class="stat-bar-fill hp-fill"></div>
+          <div class="stat-bar-fill hp-fill" id="hp-bar"></div>
         </div>
-        <span class="stat-val">78/100</span>
+        <span class="stat-val" id="hp-val">78/100</span>
       </div>
       <div class="stat-bar-wrap">
         <span class="stat-label">XP</span>
@@ -1788,12 +1924,13 @@
         <span class="stat-val" id="xp-val">100</span>
       </div>
     </div>
-    <button id="treasure-btn" onclick="openContactTreasure()">🏆 TREASURE</button>
     <div class="hud-nav">
+      <button id="treasure-btn" onclick="openContactTreasure()">🏆 TREASURE</button>
       <a href="#quests" class="nav-btn">QUESTS</a>
       <a href="#treasures" class="nav-btn">TREASURES</a>
       <a href="#inventory" class="nav-btn">SKILLS</a>
       <a href="#guild" class="nav-btn">GUILD</a>
+      <button id="view-mode-toggle" type="button" class="nav-btn mode-toggle">PRO MODE</button>
     </div>
   </nav>
 
@@ -2463,18 +2600,36 @@
     }
 
     function getXPBarPercent(xp) {
-      const lv  = getLevelFromXP(xp);
-      const min = LEVEL_THRESHOLDS[lv - 1];
-      const max = lv < 5 ? LEVEL_THRESHOLDS[lv] : 5000;
+      const min = 100;
+      const max = 5000;
       return Math.min(100, Math.max(0, ((xp - min) / (max - min)) * 100));
+    }
+
+    function getHPFromXP(xp) {
+      // HP grows gradually with account progression: 78 -> 100
+      const minXP = 100;
+      const maxXP = 5000;
+      const minHP = 78;
+      const maxHP = 100;
+      const ratio = Math.min(1, Math.max(0, (xp - minXP) / (maxXP - minXP)));
+      return Math.round(minHP + (maxHP - minHP) * ratio);
     }
 
     // ── HUD update ───────────────────────────────────────────────────────────
     function updateHUD() {
       const lv = getLevelFromXP(playerXP);
-      document.getElementById('player-class-text').textContent = `FULLSTACK MAGE · LVL ${lv}`;
+      const isProfessional = document.body.classList.contains('professional-mode');
+      document.getElementById('player-class-text').textContent = isProfessional
+        ? 'FULLSTACK ENGINEER · PROFILE'
+        : `FULLSTACK MAGE · LVL ${lv}`;
       document.getElementById('xp-val').textContent = playerXP;
       document.getElementById('xp-bar').style.width  = getXPBarPercent(playerXP) + '%';
+
+      const hp = getHPFromXP(playerXP);
+      const hpBar = document.getElementById('hp-bar');
+      const hpVal = document.getElementById('hp-val');
+      if (hpBar) hpBar.style.width = hp + '%';
+      if (hpVal) hpVal.textContent = `${hp}/100`;
     }
 
     // ── Bonus XP (skill clicks, quest opens) ─────────────────────────────────
@@ -2527,7 +2682,7 @@
       saveProgress();
       showToast('🏆 LEGENDARY TREASURE UNLOCKED!');
       const btn = document.getElementById('treasure-btn');
-      if (btn) btn.style.display = 'flex';
+      if (btn) btn.classList.add('unlocked');
       setTimeout(openContactTreasure, 1800);
     }
 
@@ -2563,7 +2718,7 @@
         updateHUD();
         if (rewardUnlocked) {
           const btn = document.getElementById('treasure-btn');
-          if (btn) btn.style.display = 'flex';
+          if (btn) btn.classList.add('unlocked');
         }
       } catch (_) {}
     }
@@ -2610,10 +2765,76 @@
       if (el) sectionObserver.observe(el);
     });
 
+    // ── UI Sound FX (WebAudio) ───────────────────────────────────────────────
+    let uiAudioCtx = null;
+
+    function getUIAudioCtx() {
+      if (uiAudioCtx) return uiAudioCtx;
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return null;
+      uiAudioCtx = new Ctx();
+      return uiAudioCtx;
+    }
+
+    function initUIAudio() {
+      const ctx = getUIAudioCtx();
+      if (!ctx) return;
+      if (ctx.state === 'suspended') {
+        ctx.resume().catch(() => {});
+      }
+    }
+
+    function playTone(ctx, start, frequency, duration, type, gainA, gainB) {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(frequency, start);
+      gain.gain.setValueAtTime(gainA, start);
+      gain.gain.exponentialRampToValueAtTime(Math.max(0.0001, gainB), start + duration);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(start);
+      osc.stop(start + duration);
+    }
+
+    function playUIFX(type) {
+      const ctx = getUIAudioCtx();
+      if (!ctx) return;
+      if (ctx.state === 'suspended') return;
+
+      const t = ctx.currentTime;
+      if (type === 'click') {
+        playTone(ctx, t, 680, 0.03, 'square', 0.02, 0.0001);
+      } else if (type === 'quest-open') {
+        playTone(ctx, t, 340, 0.06, 'triangle', 0.035, 0.0001);
+        playTone(ctx, t + 0.05, 510, 0.08, 'triangle', 0.03, 0.0001);
+      } else if (type === 'treasure-open') {
+        playTone(ctx, t, 360, 0.09, 'sawtooth', 0.03, 0.0001);
+        playTone(ctx, t + 0.07, 540, 0.11, 'triangle', 0.03, 0.0001);
+        playTone(ctx, t + 0.14, 820, 0.14, 'triangle', 0.028, 0.0001);
+      }
+    }
+
+    function replayFxClass(el, className, durationMs) {
+      if (!el) return;
+      el.classList.remove(className);
+      // Force reflow so the same animation can replay on repeated opens.
+      void el.offsetWidth;
+      el.classList.add(className);
+      setTimeout(() => el.classList.remove(className), durationMs);
+    }
+
+    document.addEventListener('pointerdown', initUIAudio, { once: true });
+    document.addEventListener('click', () => {
+      playUIFX('click');
+    });
+
     // ── Toggle Quest ─────────────────────────────────────────────────────────
     function toggleQuest(el) {
       el.classList.toggle('open');
       if (el.classList.contains('open')) {
+        replayFxClass(el, 'quest-open-fx', 500);
+        playUIFX('quest-open');
         const company = el.querySelector('.quest-company')?.textContent || 'QUEST';
         showToast(`${company} · DETAILS UNLOCKED!`);
         gainXP(30);
@@ -2630,6 +2851,8 @@
       if (success) success.style.display = 'none';
       if (btn)     { btn.textContent = '✦ CAST MESSAGE ✦'; btn.disabled = false; }
       document.getElementById('contact-modal').classList.add('open');
+      replayFxClass(document.getElementById('contact-modal-box'), 'popup-open-fx', 500);
+      playUIFX('treasure-open');
     }
 
     function closeContactModal(e) {
@@ -2759,6 +2982,8 @@
         tagsEl.appendChild(span);
       });
       document.getElementById('modal').classList.add('open');
+      replayFxClass(document.getElementById('modal-box'), 'popup-open-fx', 500);
+      playUIFX('treasure-open');
       gainXP(50);
     }
 
@@ -2809,8 +3034,154 @@
       }
     });
 
+    // ── View Mode Toggle (Gamified / Professional) ───────────────────────────
+    const VIEW_MODE_KEY = 'pf_view_mode';
+    const modeBtn = document.getElementById('view-mode-toggle');
+
+    function updateFavicon(mode) {
+      const link = document.getElementById('app-favicon');
+      if (!link) return;
+
+      const svg = mode === 'professional'
+        ? "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='12' fill='#0f1220'/><text x='32' y='42' text-anchor='middle' font-size='22' font-family='Arial' font-weight='700' fill='#00f5c4'>SV</text></svg>"
+        : "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='12' fill='#0a0a12'/><text x='32' y='44' text-anchor='middle' font-size='34' fill='#ffd700'>✦</text></svg>";
+
+      link.href = `data:image/svg+xml,${encodeURIComponent(svg)}`;
+    }
+
+    function setModeText(mode) {
+      const isProfessional = mode === 'professional';
+
+      const copy = isProfessional
+        ? {
+            playerClass: 'FULLSTACK ENGINEER · PROFILE',
+            worldTag: 'PROFILE OVERVIEW',
+            worldSubtitle: 'FULLSTACK DEVELOPER · 8+ YEARS',
+            worldDesc: 'Fullstack developer specializing in MEAN/MERN technologies, real-time systems, mobile SDKs, and developer tools across fintech, SaaS, and cloud infrastructure.',
+            zones: ['Experience', 'Projects', 'Skills', 'Contact'],
+            nav: ['EXPERIENCE', 'PROJECTS', 'SKILLS', 'CONTACT'],
+            sectionTitles: ['EXPERIENCE', 'PROJECTS', 'SKILLS'],
+            sectionPretitles: ['PROFESSIONAL JOURNEY', 'PROJECT PORTFOLIO', 'TECHNICAL SKILLS'],
+            currentRole: 'CURRENT ROLE: SDE @ FYNO',
+            currentFocus: 'CURRENT FOCUS: LLM / REACT NATIVE',
+            guildTitle: 'CONTACT',
+            guildSub: 'LET US CONNECT',
+            contactTitle: 'CONTACT FORM',
+            contactSub: 'START A CONVERSATION',
+            formPretitle: 'SEND A MESSAGE',
+            chestAction: 'VIEW DETAILS',
+            submitLabel: 'SEND MESSAGE'
+          }
+        : {
+            playerClass: `FULLSTACK MAGE · LVL ${getLevelFromXP(playerXP)}`,
+            worldTag: '▶ WELCOME TO MY WORLD ◀',
+            worldSubtitle: '// FULLSTACK DEVELOPER · 8+ YEARS //',
+            worldDesc: 'Welcome to my world. A fullstack mage specialising in MEAN/MERN sorcery — building real-time systems, mobile SDKs, and developer tools across the realms of fintech, SaaS, and cloud infrastructure.',
+            zones: ['Quest Log', 'Treasure Vault', 'Skill Tree', 'Guild Hall'],
+            nav: ['QUESTS', 'TREASURES', 'SKILLS', 'GUILD'],
+            sectionTitles: ['QUEST LOG', 'TREASURE VAULT', 'SKILL TREE'],
+            sectionPretitles: ['// CHAPTER 01', '// CHAPTER 02', '// CHAPTER 03'],
+            currentRole: 'ACTIVE QUEST: SDE @ FYNO',
+            currentFocus: 'EXPLORING: LLM / REACT NATIVE',
+            guildTitle: '⚔ GUILD HALL',
+            guildSub: '// SEND A RAVEN · CONNECT ·',
+            contactTitle: 'LEGENDARY TREASURE UNLOCKED!',
+            contactSub: "// LEVEL 5 MAGE · WIZARD'S CONTACT CRYSTAL //",
+            formPretitle: '// DISPATCH A MAGICAL MESSAGE',
+            chestAction: '▶ OPEN CHEST',
+            submitLabel: '✦ CAST MESSAGE ✦'
+          };
+
+      const playerClassEl = document.getElementById('player-class-text');
+      if (playerClassEl) playerClassEl.textContent = copy.playerClass;
+
+      const worldTagEl = document.querySelector('.world-tag');
+      const worldSubtitleEl = document.querySelector('.world-subtitle');
+      const worldDescEl = document.querySelector('.world-desc');
+      if (worldTagEl) worldTagEl.textContent = copy.worldTag;
+      if (worldSubtitleEl) worldSubtitleEl.textContent = copy.worldSubtitle;
+      if (worldDescEl) worldDescEl.textContent = copy.worldDesc;
+
+      document.querySelectorAll('.zones .zone-btn').forEach((el, i) => {
+        if (copy.zones[i]) el.textContent = copy.zones[i];
+      });
+
+      document.querySelectorAll('.hud-nav a.nav-btn').forEach((el, i) => {
+        if (copy.nav[i]) el.textContent = copy.nav[i];
+      });
+
+      const sectionTitles = [
+        document.querySelector('#quests .section-title'),
+        document.querySelector('#treasures .section-title'),
+        document.querySelector('#inventory .section-title')
+      ];
+
+      const sectionPretitles = [
+        document.querySelector('#quests .section-pretitle'),
+        document.querySelector('#treasures .section-pretitle'),
+        document.querySelector('#inventory .section-pretitle')
+      ];
+
+      sectionTitles.forEach((el, i) => {
+        if (el && copy.sectionTitles[i]) el.textContent = copy.sectionTitles[i];
+      });
+
+      sectionPretitles.forEach((el, i) => {
+        if (el && copy.sectionPretitles[i]) el.textContent = copy.sectionPretitles[i];
+      });
+
+      const currentRoleEl = document.querySelectorAll('.currently-text')[0];
+      const currentFocusEl = document.querySelectorAll('.currently-text')[1];
+      if (currentRoleEl) currentRoleEl.textContent = copy.currentRole;
+      if (currentFocusEl) currentFocusEl.textContent = copy.currentFocus;
+
+      const guildTitleEl = document.querySelector('.guild-title');
+      const guildSubEl = document.querySelector('.guild-sub');
+      if (guildTitleEl) guildTitleEl.textContent = copy.guildTitle;
+      if (guildSubEl) guildSubEl.textContent = copy.guildSub;
+
+      const contactTitleEl = document.querySelector('.treasure-unlock-title');
+      const contactSubEl = document.querySelector('.treasure-unlock-sub');
+      const formPretitleEl = document.querySelector('#contact-form-wrap .modal-pretitle');
+      if (contactTitleEl) contactTitleEl.textContent = copy.contactTitle;
+      if (contactSubEl) contactSubEl.textContent = copy.contactSub;
+      if (formPretitleEl) formPretitleEl.textContent = copy.formPretitle;
+
+      document.querySelectorAll('.chest-action').forEach(el => {
+        el.textContent = copy.chestAction;
+      });
+
+      const submitBtnEl = document.getElementById('form-submit-btn');
+      if (submitBtnEl && !submitBtnEl.disabled) {
+        submitBtnEl.textContent = copy.submitLabel;
+      }
+    }
+
+    function applyViewMode(mode) {
+      const resolved = mode === 'professional' ? 'professional' : 'gamified';
+      document.body.classList.toggle('professional-mode', resolved === 'professional');
+      setModeText(resolved);
+      updateFavicon(resolved);
+
+      if (modeBtn) {
+        modeBtn.textContent = resolved === 'professional' ? 'GAME MODE' : 'PRO MODE';
+      }
+
+      localStorage.setItem(VIEW_MODE_KEY, resolved);
+    }
+
+    function toggleViewMode() {
+      const current = localStorage.getItem(VIEW_MODE_KEY) || 'gamified';
+      applyViewMode(current === 'professional' ? 'gamified' : 'professional');
+    }
+
+    if (modeBtn) {
+      modeBtn.addEventListener('click', toggleViewMode);
+    }
+
     // ── Init ──────────────────────────────────────────────────────────────────
     loadProgress();
+    applyViewMode(localStorage.getItem(VIEW_MODE_KEY) || 'gamified');
   </script>
 </body>
 
