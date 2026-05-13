@@ -4413,157 +4413,10 @@
       opacity: 1;
     }
 
-    /* ── Responsive ──────────────────────────────────────────────────── */
-    @media(max-width:600px) {
-      #hud {
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        background: rgba(8, 12, 20, 0.97);
-        padding: 10px 6px 6px 6px;
-        flex-wrap: wrap;
-        row-gap: 10px;
-        column-gap: 6px;
-        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
-      }
-
-      .hud-stats {
-        display: none
-      }
-
-      .hud-player {
-        flex-shrink: 0;
-      }
-
-      .hud-nav {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        flex: 1;
-        justify-content: center;
-      }
-
-      .nav-btn,
-      #treasure-btn,
-      #pro-contact-toggle {
-        font-size: 13px;
-        padding: 13px 18px;
-        border-radius: 8px;
-        margin-bottom: 4px;
-        margin-top: 2px;
-        white-space: nowrap;
-        flex: 1 1 120px;
-        min-width: 90px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
-        background: linear-gradient(90deg, #101626 60%, #1b2438 100%);
-        border: 1.5px solid #232b3a;
-        font-family: 'Rajdhani', sans-serif;
-        font-weight: 600;
-        letter-spacing: 1.2px;
-        color: #e8edf8;
-        transition: background 0.18s, color 0.18s;
-      }
-
-      .nav-btn:active,
-      #treasure-btn:active,
-      #pro-contact-toggle:active {
-        background: #232b3a;
-        color: #6ee7b7;
-      }
-
-      .chest-grid {
-        grid-template-columns: 1fr;
-        gap: 18px;
-      }
-
-      .inv-grid {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 14px;
-      }
-
-      /* ── Pro Mode Mobile Fixes ──────────────────────────────────────── */
-      body.professional-mode .pro-collectible {
-        max-width: 98vw;
-        margin: 0 auto 18px auto;
-      }
-
-      body.professional-mode #world {
-        padding: 60px 4vw 24px 4vw;
-      }
-
-      body.professional-mode .world-name {
-        line-height: 1.1;
-        margin-bottom: 10px;
-      }
-
-      body.professional-mode .modal-backdrop {
-        align-items: flex-start;
-        justify-content: center;
-        padding: 6px;
-      }
-
-      body.professional-mode .modal-box {
-        width: calc(100% - 10px);
-        max-height: calc(100vh - 60px);
-        margin-top: 10px;
-      }
-
-      body.professional-mode #pro-contact-modal .modal-box {
-        width: calc(100% - 10px);
-        max-height: calc(100vh - 60px);
-      }
-
-      body.professional-mode #modal .modal-box,
-      body.professional-mode #contact-modal .modal-box,
-      body.professional-mode #pro-contact-modal .modal-box {
-        width: calc(100% - 10px);
-      }
-
-      .modal-content {
-        padding: 12px 6px;
-      }
-
-      .form-group {
-        margin-bottom: 16px;
-      }
-
-      .form-label {
-        font-size: 11px;
-        margin-bottom: 6px;
-      }
-
-      .form-input {
-        font-size: 18px;
-        padding: 12px 12px;
-        border-radius: 6px;
-      }
-
-      textarea.form-input {
-        height: 100px;
-      }
-
-      .form-submit {
-        font-size: 14px;
-        padding: 14px;
-        border-radius: 7px;
-      }
-
-      .pro-contact-header {
-        padding: 18px 8px 10px;
-      }
-
-      .pro-contact-title {
-        font-size: 16px;
-        font-weight: 700;
-      }
-
-      .pro-contact-sub {
-        font-size: 15px;
-      }
-    }
-
+    /* ── Responsive & Mobile Navbar ────────────────────────────────── */
     /* Mobile navbar improvements */
     @media (max-width: 600px) {
+      /* Hamburger Menu */
       .mobile-nav-toggle {
         display: block !important;
         position: absolute;
@@ -4611,12 +4464,28 @@
         top: 8px;
       }
 
+      /* Navbar Adjustments */
       #hud {
-        padding-left: 50px !important;
-        padding-top: 6px !important;
-        padding-bottom: 6px !important;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(8, 12, 20, 0.97);
+        padding: 8px 8px 8px 50px !important;
+        flex-wrap: wrap;
+        row-gap: 10px;
+        column-gap: 6px;
+        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
       }
 
+      .hud-stats {
+        display: none;
+      }
+
+      .hud-player {
+        flex-shrink: 0;
+      }
+
+      /* Mobile Navigation Menu */
       .hud-nav {
         display: none !important;
         position: fixed;
@@ -4664,6 +4533,98 @@
 
       #view-mode-toggle {
         margin-top: auto;
+      }
+
+      /* Gamified Mode Responsive */
+      .chest-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+
+      .inv-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 14px;
+      }
+
+      /* Professional Mode Responsive */
+      body.professional-mode .pro-collectible {
+        max-width: 98vw;
+        margin: 0 auto 18px auto;
+      }
+
+      body.professional-mode #world {
+        padding: 60px 4vw 24px 4vw;
+      }
+
+      body.professional-mode .world-name {
+        line-height: 1.1;
+        margin-bottom: 10px;
+      }
+
+      body.professional-mode .modal-backdrop {
+        align-items: flex-start;
+        justify-content: center;
+        padding: 6px;
+      }
+
+      body.professional-mode .modal-box {
+        width: calc(100% - 10px);
+        max-height: calc(100vh - 60px);
+        margin-top: 10px;
+      }
+
+      body.professional-mode #pro-contact-modal .modal-box {
+        width: calc(100% - 10px);
+        max-height: calc(100vh - 60px);
+      }
+
+      body.professional-mode #modal .modal-box,
+      body.professional-mode #contact-modal .modal-box,
+      body.professional-mode #pro-contact-modal .modal-box {
+        width: calc(100% - 10px);
+      }
+
+      /* Forms & Modals */
+      .modal-content {
+        padding: 12px 6px;
+      }
+
+      .form-group {
+        margin-bottom: 16px;
+      }
+
+      .form-label {
+        font-size: 11px;
+        margin-bottom: 6px;
+      }
+
+      .form-input {
+        font-size: 18px;
+        padding: 12px 12px;
+        border-radius: 6px;
+      }
+
+      textarea.form-input {
+        height: 100px;
+      }
+
+      .form-submit {
+        font-size: 14px;
+        padding: 14px;
+        border-radius: 7px;
+      }
+
+      .pro-contact-header {
+        padding: 18px 8px 10px;
+      }
+
+      .pro-contact-title {
+        font-size: 16px;
+        font-weight: 700;
+      }
+
+      .pro-contact-sub {
+        font-size: 15px;
       }
     }
 
