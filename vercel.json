@@ -1,18 +1,18 @@
 {
   "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vue",
   "builds": [
     {
       "src": "backend/server.js",
       "use": "@vercel/node",
-      "config": {
-        "maxLambdaSize": "10mb"
-      }
+      "config": { "maxLambdaSize": "10mb" }
     }
   ],
   "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/backend/server.js"
-    }
+    { "src": "/api/(.*)",  "dest": "/backend/server.js" },
+    { "handle": "filesystem" },
+    { "src": "/(.*)",      "dest": "/index.html" }
   ]
 }
